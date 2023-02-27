@@ -1,0 +1,10 @@
+#addbutton{
+
+    padding-left: 10rem;
+
+}
+#subbutton{
+    padding-top: 10px;
+    display:flex;
+    justify-content:space-evenly;
+}

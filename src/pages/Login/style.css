@@ -1,0 +1,91 @@
+.login .app{
+    display: flex;
+    min-height: 90vh;
+    align-items: center;
+    background: white;
+    justify-content: space-around;
+}
+.login .login-form{
+    margin-left: auto;
+    margin-right: auto;
+}
+.login .auth-form-container {
+   margin-left: auto;
+   margin-right: auto;
+   padding: 50px;
+   /* border:1px solid blue; */
+   border-radius: 20px;
+   width: 400px;
+   height: 500px;
+    
+}
+.login input{
+    margin: 0.9rem 0;
+    padding: 0.8rem;
+    font-size: 18px;
+    background-color: #E6F0FE;
+    width: 80%;
+    border-radius: 10px;
+    cursor: pointer;
+}
+.login button{
+    margin: 1.0rem 0;
+    border: none;
+    background-color: #536DFE;
+    padding: 12px;
+    border-radius: 10px;
+ 
+    width: 35%;
+    color: white;
+    font-size: 18px;
+}
+.login .logo{
+    width: 50%;
+    height: 50%;
+    line-height: 80%;
+}
+.login h1{
+    font-size: 31px;
+    color: rgba(30, 30, 30, 0.76);
+}
+.login .welcome{
+    justify-content: center;
+    width: 70%;
+    width: 60%;
+    height: 70%;
+    padding: 40px;
+
+}
+.login h3{
+    color:blue;
+    font-size: 1.3em;
+}
+.login input{
+    margin-left: 30px;
+}
+.login input.input_email {
+    border-color: blue;
+    padding-left: 40px;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/3237/3237472.png');
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+    background-position: left  ;
+ }
+ .login input.input_password {
+    border-color:blue;
+    padding-left: 40px;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/8816/8816538.png');
+    /* background-image: url(''); */
+    background-repeat: no-repeat;
+    background-size: 30px 30px;
+    background-position: left  ;
+ }
+#button-input{
+    cursor: pointer;
+}
+
+@media only screen and (max-width: 600px) {
+  .welcome{
+    display:none
+  }
+  }
