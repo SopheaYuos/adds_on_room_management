@@ -15,6 +15,9 @@ export default {
     async getOneBooking(id) {
         return await axios.get(URL + `/book/${id}`);
     },
+    async getAllBookingOneUser(id) {
+        return await axios.get(URL + `/book/user/${id}`);
+    },
     async createNewBooking(data) {
         return await axios.post(URL + `/book`, data);
     },

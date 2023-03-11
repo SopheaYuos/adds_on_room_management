@@ -159,7 +159,7 @@ export default function User() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar sx={{ backgroundColor: '#1565c0', }} position="fixed">
+            <AppBar sx={{ backgroundColor: '#1565c0', overflow: 'hidden' }} position="fixed">
                 <Toolbar>
 
                     <Typography
@@ -170,15 +170,7 @@ export default function User() {
                     >
                         User Page
                     </Typography>
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                            placeholder="Search…"
-                            inputProps={{ 'aria-label': 'search' }}
-                        />
-                    </Search>
+
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: { xs: 'none', md: 'flex' }, }}>
                         <Button
@@ -193,7 +185,7 @@ export default function User() {
                         <Button style={({ isActive }) => ({
                             color: isActive ? '#fff' : 'rgba(255,255,255,0.5)',
                         })}
-                            component={NavLink} to={`${'/user/booked_room'}`} size="large" aria-label="show 4 new mails" color="inherit">
+                            component={NavLink} to={`${'/user/booked_room'}`} aria-label="show 4 new mails" color="inherit">
 
                             Booked Rooms
                         </Button>

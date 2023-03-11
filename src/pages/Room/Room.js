@@ -166,7 +166,7 @@ export default function Room() {
           <TableBody>
             {recordsAfterPagingAndSorting().map((item) => (
               <TableRow key={item.id}>
-                
+
                 <TableCell>{item.room_name}</TableCell>
                 <TableCell>{item.room_type}</TableCell>
                 <TableCell>

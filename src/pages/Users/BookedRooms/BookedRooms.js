@@ -3,8 +3,8 @@ import AllBookedUser from "./AllBookUser";
 
 export default function BookedRoom() {
     return (
-        <Stack margin={10}>
-            
+        <Stack sx={{ marginTop: "3rem" }}>
+
             <AllBookedUser />
         </Stack>
     )

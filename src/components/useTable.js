@@ -26,7 +26,7 @@ export default function useTable(records, headCells, filterFn) {
 
     const classes = useStyles();
 
-    const pages = [10, 20, 50]
+    const pages = [4, 20, 50]
     const [page, setPage] = useState(0)
     const [rowsPerPage, setRowsPerPage] = useState(pages[page])
     const [order, setOrder] = useState()
@@ -84,7 +84,7 @@ export default function useTable(records, headCells, filterFn) {
         count={records.length}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        
+
     />)
 
     function stableSort(array, comparator) {

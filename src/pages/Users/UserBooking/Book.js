@@ -21,16 +21,6 @@ import jwt_decode from 'jwt-decode';
 import CustomizedSnackbars from '../../../components/Snackbar';
 
 
-function BasicChips() {
-    return (
-        <Stack direction="row" spacing={1}>
-            <Chip label="Chip Filled" />
-            <Chip label="Chip Outlined" variant="outlined" />
-        </Stack>
-    );
-}
-
-
 export default function Book() {
 
     const [open, setOpen] = React.useState(false);
@@ -46,6 +36,7 @@ export default function Book() {
     const [roomObj, setRoomObj] = useState({});
     const [snackBar, setSnackBar] = useState({ isOpen: false, message: "", type: "", Transition: Slide });
     const [loading, setLoading] = useState(false)
+    const [messages, setMessages] = useState([]);
     const handleClickOpen = (e) => {
         console.log(e);
         setRoomObj(e);
@@ -133,7 +124,14 @@ export default function Book() {
         return "";
     }
     useEffect(() => {
+        // socket.on("test", (res) => {
+        //     console.log(res, "socket id");
+        // });
         const fetchData = async () => {
+            // console.log(socket, 'socketish')
+            // client-side
+
+            // socket.on('messageResponse', (data) => setMessages([...messages, data]));
             setLoading(true)
             try {
                 let DateTimeFilter;

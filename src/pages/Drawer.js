@@ -253,10 +253,10 @@ function MiniDrawer() {
 
         <List>
 
-          {sideBarMainFeatures.map((item) => (
+          {sideBarMainFeatures.map((item, index) => (
 
             <ListItem
-              key={item.text} disablePadding sx={{ display: 'block' }}
+              key={index} disablePadding sx={{ display: 'block' }}
               style={({ isActive }) => ({
 
                 color: isActive ? 'blue' : 'black',
