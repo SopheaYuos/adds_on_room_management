@@ -122,7 +122,18 @@ module.exports = {
         WHERE id = ${id}`);
 
         return result;
-    }
+    },
+    allBookedOneUser: async (id) => {
+        const result = await (await promiseCon).query(
+            `        
+            SELECT b.* FROM booking b JOIN users u
+            ON b.responsibler = u.user_id
+            WHERE b.responsibler ="${id}"
+            AND u.is_delete = FALSE AND b.is_delete = FALSE ;
+             `);
+        const res = await getForeignTables(result);
+        return res[0]
+    },
 }
 async function getForeignTables(result) {
     for (let i = 0; i < result[0].length; i++) {

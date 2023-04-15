@@ -1,4 +1,4 @@
-const { addNewBooking, getAllBooking, getBookingById, deleteBookingById, updateBooking, getFreeRoomToBook, updateStatus, getFreeSubRoomToBook } = require("../controller/bookingController")
+const { addNewBooking, getAllBooking, getBookingById, deleteBookingById, updateBooking, getFreeRoomToBook, updateStatus, getFreeSubRoomToBook, allBookedOneUser } = require("../controller/bookingController")
 var express = require('express')
 var app = express()
 app.use(express.json());
@@ -75,6 +75,7 @@ module.exports = function (app, id) {
                 });
             }
         })
+
     app.route('/book/:id')
         .get(async (req, res) => {
 
@@ -100,6 +101,15 @@ module.exports = function (app, id) {
                 });
             }
 
+        })
+    app.route('/book/user/:id')
+        .get(async (req, res) => {
+            console.log(req.params.id)
+            const result = await allBookedOneUser(req.params.id);
+            res.status(200).json({
+                success: true,
+                data: result
+            });
         })
 }
 

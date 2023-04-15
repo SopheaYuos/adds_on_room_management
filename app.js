@@ -4,11 +4,28 @@ const con = require('./src/config/database');
 const app = express();
 const PORT = 4000;
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
+// app.use(express.urlencoded({ extended: true }))
 app.use(cors())
+
+const httpServer = require("http").createServer();
+const io = require("socket.io")(httpServer, {
+    // ...
+    origin: {
+        cors: '*'
+    }
+});
+
+
+// const socket = require("socket.io-client")("http://localhost:3000");
+
+// socket.on("connect_error", (err) => {
+//     console.log(`connect_error due to ${err}`);
+// });
+
 
 app.get('/', (req, res) => {
     res.status(200).send('Hello from server');
+
 })
 
 //call to routes
@@ -24,6 +41,9 @@ app._router.stack          // registered routes
     .map(r => console.log(r.route.path))  // get all the paths
 
 console.log('_________________')
+
+
+
 
 app.listen(PORT, (error) => {
     if (!error) {
