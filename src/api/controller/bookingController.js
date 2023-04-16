@@ -5,7 +5,6 @@ const formatDate = require("../../utils/formatDate");
 module.exports = {
     addNewBooking: async function insertNew(reqBody) {
         const created = formatDate(new Date()) //generate current date
-        console.log(reqBody.start_date)
         const sql = `
         INSERT INTO booking(start_date, end_date, room_id, sub_room_id, number_of_people,event_type,responsibler, status, description, created, modified)
                     values("${reqBody.start_date}", "${reqBody.end_date}", ${reqBody.room_id}, ${reqBody.sub_room_id}, ${reqBody.number_of_people}, "${reqBody.event_type}", "${reqBody.responsibler}", "${reqBody.status}"," ${reqBody.description}", "${created}", "${created}")`;
@@ -148,6 +147,7 @@ async function getForeignTables(result) {
         result[0][i].responsibler = getResponsbiler[0][0];
         result[0][i].room_id = room[0][0];
         result[0][i].sub_room_id = subRoom[0][0] || null;
+
 
     }
     return result;
