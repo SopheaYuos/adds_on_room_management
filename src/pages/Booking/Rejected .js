@@ -41,7 +41,7 @@ const headCells = [
     { id: 'endtime', label: 'End Time' },
     { id: 'person', label: 'Person' },
     { id: 'status', label: 'Status' },
-   
+
 ]
 
 export default function Allbooking() {
@@ -52,22 +52,21 @@ export default function Allbooking() {
         () => {
             bookingApi.getAllBooking().then((res) => {
                 setData(res.data.data);
-                // console.log(res.data.data);
             }).catch((err) => console.log(err));
         }, []);
     //update data
     const [status, setStatus] = useState(null);
-    
-      function updateSTATUS(data, status) {
+
+    function updateSTATUS(data, status) {
         data.status = status;
         console.log(data, 'hello');
         bookingApi.updateStatus(data).then((response) => {
             setStatus(response.data.data);
             console.log(response.data.data = "stat", "Data");
-          });
-      }
+        });
+    }
     //onSubmit handler 
-   
+
     const classes = useStyles();
     const [recordForEdit, setRecordForEdit] = useState(null)
     const [records, setRecords] = useState(allbookingService.getAllEmployees())
@@ -92,29 +91,29 @@ export default function Allbooking() {
                 <TblContainer>
                     <TblHead />
                     <TableBody>
-                    {
+                        {
                             items.map(item =>
                             (
-                                
+
                                 <TableRow key={item}>
-                                {(item.status) === "Rejected" &&
-                                <>
-                                    <TableCell>{item.responsibler.name}</TableCell>
-                                    <TableCell>{item.room_id.room_name}</TableCell>
-                                    {item.sub_room_id === null && <TableCell>N/A</TableCell>} {/* cheack condition */}
-                                    {item.sub_room_id != null && <TableCell>{item?.sub_room_id?.room_name}</TableCell>}
-                                    <TableCell>{item.event_type}</TableCell>
-                                    <TableCell>{moment(item.start_date).format('DD MMM YYYY')}</TableCell>
-                                    <TableCell>{moment(item.end_date).format('DD MMM YYYY')}</TableCell>
-                                    <TableCell>{dayjs(item.start_date).format('hh:mm A')}</TableCell> 
-                                    <TableCell>{dayjs(item.end_date).format('hh:mm A')}</TableCell>
-                                    <TableCell>{item.number_of_people}</TableCell>
-                                    
-                                        {/* <TableCell>{item.action}</TableCell> */}
-                                        {item.status === "Rejected" && <TableCell><Chip label="Rejected" color="error"/></TableCell>}
+                                    {(item.status) === "Rejected" &&
+                                        <>
+                                            <TableCell>{item.responsibler.name}</TableCell>
+                                            <TableCell>{item.room_id.room_name}</TableCell>
+                                            {item.sub_room_id === null && <TableCell>N/A</TableCell>} {/* cheack condition */}
+                                            {item.sub_room_id != null && <TableCell>{item?.sub_room_id?.room_name}</TableCell>}
+                                            <TableCell>{item.event_type}</TableCell>
+                                            <TableCell>{moment(item.start_date).format('DD MMM YYYY')}</TableCell>
+                                            <TableCell>{moment(item.end_date).format('DD MMM YYYY')}</TableCell>
+                                            <TableCell>{dayjs(item.start_date).format('hh:mm A')}</TableCell>
+                                            <TableCell>{dayjs(item.end_date).format('hh:mm A')}</TableCell>
+                                            <TableCell>{item.number_of_people}</TableCell>
+
+                                            {/* <TableCell>{item.action}</TableCell> */}
+                                            {item.status === "Rejected" && <TableCell><Chip label="Rejected" color="error" /></TableCell>}
                                         </>
-                                }
-                                            
+                                    }
+
                                 </TableRow>)
                             )
                         }

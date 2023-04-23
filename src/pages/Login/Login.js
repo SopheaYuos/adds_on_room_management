@@ -2,43 +2,51 @@ import React, { useState } from 'react';
 import jwt_decode from 'jwt-decode';
 import './style.css';
 import LoginApi from '../../api/loginApi';
-import { useNavigate } from 'react-router-dom';
-export const Login = (props) => {
+import { useNavigate, redirect } from 'react-router-dom';
+import { LoadingButton } from '@mui/lab';
+import CustomizedSnackbars from '../../components/Snackbar';
+import { Slide } from '@mui/material';
+export const Login = () => {
     const navigate = useNavigate();
     const [inputs, setInputs] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [snackBar, setSnackBar] = useState({ isOpen: false, message: "", type: "", Transition: Slide });
+
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
         setInputs(values => ({ ...values, [name]: value }))
     }
-    function getCookie(name) {
-        let cookie = {};
-        document.cookie.split(';').forEach(function (el) {
-            let [k, v] = el.split('=');
-            cookie[k.trim()] = v;
-        })
-        return cookie[name];
-    }
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // loginApi.login(inputs);
-        const result = await LoginApi(inputs)
-        const USER_ROLE = jwt_decode(result.token).user_role;
-        // document.cookie = "token=" + result?.token + "expires= " + USER_ROLE.exp;
-        document.cookie = "token=" + result?.token;
-        // const decode = jwt_decode(result?.data?.token)
-        // console.log(jwt_decode(result?.token))
+        if (!inputs.user_id || !inputs.password) {
+            setSnackBar({ isOpen: true, message: "No valid input", type: "info" })
+            return;
+        };
+        try {
+            setLoading(true);
+            const result = await LoginApi(inputs)
+            if (result.success) {
+                setSnackBar({ isOpen: true, message: result.message, type: "success" })
 
-
-        if (USER_ROLE === 'ADMIN') {
-            navigate('/dashboard')
+                document.cookie = "token=" + result?.token;
+                const USER_ROLE = jwt_decode(result.token).user_role;
+                if (USER_ROLE === 'ADMIN') {
+                    navigate('/dashboard')
+                }
+                if (USER_ROLE === 'TEACHER' || USER_ROLE === 'STUDENT') {
+                    navigate('/user/book')
+                }
+            } else {
+                setSnackBar({ isOpen: true, message: result.message, type: "warning" })
+            }
         }
-        if (USER_ROLE === 'TEACHER' || USER_ROLE === 'STUDENT') {
-            navigate('/user/book')
+        catch (e) {
+            setSnackBar({ isOpen: true, message: 'Something went wrong', type: "error" })
         }
-        // console.log(api, "api");
-        // navigate('/dashboard')
-        // AuthService("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkI…I2MX0.uZ1zNHb4jsWbSgV65ilHEo_9X1kTFXATBpiwhLcP3PI")
+        finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -58,12 +66,21 @@ export const Login = (props) => {
                     <div>
                         <form className="login-form">
                             <center>
-                                <input onChange={handleChange} className="input_email" value={inputs.user_id} type="text" placeholder="Username" id="user_id" name="user_id"></input>
-                                <input onChange={handleChange} className="input_password" value={inputs.password} type="password" placeholder="Password" id="password" name="password"></input>
+                                <input required autoComplete='off' onChange={handleChange} className="input_email" value={inputs.user_id || ''} type="text" placeholder="Username" id="user_id" name="user_id"></input>
+                                <input required onChange={handleChange} className="input_password" value={inputs.password || ''} type="password" placeholder="Password" id="password" name="password"></input>
                             </center>
                             <div>
                                 <center>
-                                    <button id="button-input" onClick={handleSubmit}>Log in</button>
+                                    <LoadingButton
+                                        style={{ borderRadius: '8px', margin: '10px 0 0 20px' }}
+                                        loading={loading}
+                                        variant="contained"
+                                        onClick={handleSubmit}
+                                        size='large'
+                                        disabled={!inputs.user_id || !inputs.password}
+                                    >
+                                        Log in
+                                    </LoadingButton>
                                 </center>
                             </div>
                         </form>
@@ -72,7 +89,9 @@ export const Login = (props) => {
                 <div className="image">
                     <img src={'/assets/Welcome.svg'} alt="welcome" className="welcome"></img>
                 </div>
-            </div>
-        </div>
+            </div >
+            <CustomizedSnackbars snackBar={snackBar} setSnackBar={setSnackBar} position={{ vertical: 'top', horizontal: 'right' }} />
+
+        </div >
     );
 }

@@ -155,7 +155,6 @@ function MiniDrawer() {
 
   const handleDrawerClose = () => {
     setOpen(false);
-    alert(open)
   };
 
 

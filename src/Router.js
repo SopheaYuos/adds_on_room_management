@@ -12,7 +12,7 @@ import BookedRoom from "./pages/Users/BookedRooms/BookedRooms";
 import NotFound from "./pages/NotFound";
 import jwt_decode from "jwt-decode";
 // import io from 'socket.io-client'
-// import Test from "./pages/Test";
+import Test from "./pages/Test";
 // const socket = io('http://localhost:4000', { transports: ['websocket'] });
 
 function getCookie(name) {
@@ -74,10 +74,10 @@ export const router = createBrowserRouter([
     path: '/login',
     element: <Login />
   },
-  // {
-  //   path: '/test',
-  //   element: <Test />
-  // },
+  {
+    path: '/test',
+    element: <Test />
+  },
   {
     path: '/user',
     element: <User />,

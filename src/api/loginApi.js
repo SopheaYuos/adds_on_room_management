@@ -8,12 +8,10 @@ import { URL } from "./api";
 export default async function LoginApi(data) {
     //room
 
-    console.log(data)
     const result = await axios.post(URL + '/api/login', data);
     // const expireDate = new Date(result?.data.exp * 1000)
-    
+
     // AuthService(result?.data?.token)
-    console.log(result.data)
     // const USER_ROLE = 'ADMIN'
     // if (USER_ROLE === 'ADMIN') {
     //     console.log('here we go admin')

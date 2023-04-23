@@ -28,17 +28,6 @@
     border-radius: 10px;
     cursor: pointer;
 }
-.login button{
-    margin: 1.0rem 0;
-    border: none;
-    background-color: #536DFE;
-    padding: 12px;
-    border-radius: 10px;
- 
-    width: 35%;
-    color: white;
-    font-size: 18px;
-}
 .login .logo{
     width: 50%;
     height: 50%;
@@ -54,7 +43,6 @@
     width: 60%;
     height: 70%;
     padding: 40px;
-
 }
 .login h3{
     color:blue;
@@ -71,11 +59,14 @@
     background-size: 30px 30px;
     background-position: left  ;
  }
+ #test {
+    border:2px solid green;
+    
+ }
  .login input.input_password {
     border-color:blue;
     padding-left: 40px;
     background-image: url('https://cdn-icons-png.flaticon.com/512/8816/8816538.png');
-    /* background-image: url(''); */
     background-repeat: no-repeat;
     background-size: 30px 30px;
     background-position: left  ;
@@ -88,4 +79,4 @@
   .welcome{
     display:none
   }
-  }
+}

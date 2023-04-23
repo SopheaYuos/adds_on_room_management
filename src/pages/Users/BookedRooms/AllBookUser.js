@@ -19,6 +19,8 @@ import { makeStyles } from "@material-ui/core";
 import { useEffect } from "react";
 import bookingApi from "../../../api/bookingApi";
 import { format } from "date-fns";
+import getUserFromCookie from "../../../helper/cookieHelper";
+import ExcelExporter from "../../../components/controls/ExportExcel";
 
 const useStyles = makeStyles((theme) => ({
     pageContent: {
@@ -52,11 +54,11 @@ export default function Student() {
     const [recordForEdit, setRecordForEdit] = useState(null);
     const [records, setRecords] = useState();
     const [status, setStatus] = useState(null);
-
+    const { user_id } = getUserFromCookie('token');
     // call data
     const [items, setData] = useState([]);
     useEffect(() => {
-        bookingApi.getAllBookingOneUser("e20181297")
+        bookingApi.getAllBookingOneUser(user_id)
             .then((res) => {
                 setData(res.data.data);
                 console.log(res.data.data);
@@ -84,17 +86,14 @@ export default function Student() {
         subTitle: "",
     });
 
-    const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } =
+    const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting, index } =
         useTable(items, headCells, filterFn);
     const handleSearch = (e) => {
         let target = e.target;
-        console.log(target.value, items);
         setFilterFn({
             fn: (items) => {
-                console.log('here it is')
                 if (target.value === "") return items;
                 else {
-                    console.log(items, "ROOM");
                     return items.filter(
                         (x) =>
                             x.event_type.toLowerCase().indexOf(target.value.toLowerCase()) !==
@@ -103,7 +102,6 @@ export default function Student() {
                 }
             },
         });
-        console.log('here it goes');
     };
 
 
@@ -120,11 +118,15 @@ export default function Student() {
             type: "error",
         });
     };
-
+    const d = [{
+        name: 'sophea'
+    }]
     return (
         <>
 
+            {/* <ExportExcel /> */}
             <Paper className={classes.pageContent}>
+                <ExcelExporter />
                 <Toolbar>
                     <Controls.Input
                         label="Search Students"
@@ -146,6 +148,7 @@ export default function Student() {
                     <TableBody>
                         {recordsAfterPagingAndSorting().map((item, row) => (
                             <TableRow key={item.id} id={item.id}>
+
                                 <TableCell>{row + 1}</TableCell>
                                 <TableCell>{item.room_id.room_name}</TableCell>
                                 <TableCell>{item.sub_room_id === null ? 'N/A' : item?.sub_room_id?.room_name}</TableCell>

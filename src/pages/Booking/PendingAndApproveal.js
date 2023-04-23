@@ -51,8 +51,6 @@ export default function Allbooking() {
         () => {
             bookingApi.getAllBooking().then((res) => {
                 setData(res.data.data);
-
-                console.log(res.data.data);
             }).catch((err) => console.log(err));
         }, [status]);
     //update data
@@ -86,12 +84,10 @@ export default function Allbooking() {
         recordsAfterPagingAndSorting
     } = useTable(records, headCells, filterFn);
 
+    console.log(items, 'this si titems')
     return (
         <>
             <Paper className={classes.pageContent}>
-                {/* <Controls.Exportdata
-                    excelData={items} fileName={"Student Information"}>
-                    </Controls.Exportdata> */}
                 <TblContainer>
                     <TblHead />
                     <TableBody>

@@ -23,7 +23,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function useTable(records, headCells, filterFn) {
-
     const classes = useStyles();
 
     const pages = [4, 20, 50]
@@ -31,6 +30,7 @@ export default function useTable(records, headCells, filterFn) {
     const [rowsPerPage, setRowsPerPage] = useState(pages[page])
     const [order, setOrder] = useState()
     const [orderBy, setOrderBy] = useState()
+    const [index, setIndex] = useState(0);
 
     const TblContainer = props => (
         <Table className={classes.table}>
@@ -67,7 +67,6 @@ export default function useTable(records, headCells, filterFn) {
     }
 
     const handleChangePage = (event, newPage) => {
-        // alert("Hello");
         setPage(newPage);
     }
 
@@ -84,7 +83,6 @@ export default function useTable(records, headCells, filterFn) {
         count={records.length}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-
     />)
 
     function stableSort(array, comparator) {
@@ -122,6 +120,7 @@ export default function useTable(records, headCells, filterFn) {
         TblContainer,
         TblHead,
         TblPagination,
-        recordsAfterPagingAndSorting
+        recordsAfterPagingAndSorting,
+        index,
     }
 }
