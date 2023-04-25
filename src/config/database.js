@@ -7,9 +7,9 @@ const { userSchema } = require('../model/userSchema');
 
 
 const con = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
 })
 
 con.connect(function (err) {

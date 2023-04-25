@@ -1,10 +1,10 @@
 const mysql = require('mysql2/promise');
 
 const promiseCon = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'room_management',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME
 })
 
 module.exports = promiseCon;

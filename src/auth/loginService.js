@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const { getUserbyID } = require('../api/controller/userController');
 const { decryptPass } = require('../utils/encryptDecrypt');
 
-const SECRET = "this is secret key from group 16";
+const SECRET = process.env.SECRET;
 
 module.exports = function (app) {
     app.route('/api/login')
@@ -35,7 +35,7 @@ module.exports = function (app) {
                 } else {
                     res.status(200).json({
                         success: false,
-                        message: 'Incorrect password or user_id'
+                        message: 'Incorrect password or username'
                     });
 
                 }
