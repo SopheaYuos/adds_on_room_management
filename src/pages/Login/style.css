@@ -4,6 +4,7 @@
     align-items: center;
     background: white;
     justify-content: space-around;
+    margin-left: 10%;
 }
 .login .login-form{
     margin-left: auto;
@@ -23,14 +24,14 @@
     margin: 0.9rem 0;
     padding: 0.8rem;
     font-size: 18px;
-    background-color: #E6F0FE;
+    background-color: #fafafa;
     width: 80%;
     border-radius: 10px;
     cursor: pointer;
 }
 .login .logo{
-    width: 50%;
-    height: 50%;
+    width: 40%;
+    height: 40%;
     line-height: 80%;
 }
 .login h1{
@@ -53,16 +54,20 @@
 }
 .login input.input_email {
     border-color: blue;
-    padding-left: 40px;
     background-image: url('https://cdn-icons-png.flaticon.com/512/3237/3237472.png');
     background-repeat: no-repeat;
     background-size: 30px 30px;
     background-position: left  ;
+    padding-left: 40px;
  }
- #test {
-    border:2px solid green;
-    
+ .register input.input_email {
+    border-color: blue;
+    background-image: none;
  }
+ .login .invalid {
+    border-color: red !important;
+ }
+
  .login input.input_password {
     border-color:blue;
     padding-left: 40px;
@@ -71,8 +76,15 @@
     background-size: 30px 30px;
     background-position: left  ;
  }
+  .register input.input_email,  .register input.input_password  {
+    background-image: none;
+    padding-left: 10px;
+ }
 #button-input{
-    cursor: pointer;
+    cursor: pointer !important;
+}
+.register__validation-error{
+    font-size: medium;
 }
 
 @media only screen and (max-width: 600px) {
