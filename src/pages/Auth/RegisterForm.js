@@ -8,6 +8,7 @@ import CustomizedSnackbars from '../../components/Snackbar';
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Slide } from '@mui/material';
 import { isValidPassword, isValidEmail, isValidCambodiaPhone, passwordRuleMessages } from '../../helper/validateFormatHelper';
 import { Cancel, CheckBox } from '@mui/icons-material';
+import sendmailApi from '../../api/sendmailApi';
 export const RegisterForm = () => {
     const navigate = useNavigate();
     const [inputs, setInputs] = useState({});
@@ -56,48 +57,50 @@ export const RegisterForm = () => {
         console.log(validPhoneFormat, ' password')
         console.log(isValid, ' password');
 
-        const isPasswordError = validPasswordFormat.every((val) => val.error);
-        console.log(isPasswordError, 'erro')
-        if (isPasswordError || !validEmailFormat || !validPhoneFormat || !isValid || inputs.password !== inputs.confirm_password) {
+        const isValidPasswordFormat = validPasswordFormat.every((val) => val.error === false);
+        console.log(isValidPasswordFormat, 'erro')
+        if (!isValidPasswordFormat || !validEmailFormat || !validPhoneFormat || !isValid || inputs.password !== inputs.confirm_password) {
             console.log(inputs, 'validationdsf ')
             // console.log()
             return;
         }
 
-        // try {
-        setLoading(true);
-        console.log(inputs, 'input')
-        const result = await usersApi.createNewUser(inputs);
-        console.log(result.data.success, 'result')
-        // if (result.data.success) {
-        //     console.log(result.data, 'result12323')
-        //     setSnackBar({ isOpen: true, message: result.data.message, type: "success" })
-
-        //     document.cookie = "token=" + result?.data.token;
-        //     const USER_ROLE = jwt_decode(result?.data.token).user_role;
-        //     if (USER_ROLE === 'ADMIN') {
-        //         navigate('/dashboard')
-        //     }
-        //     if (USER_ROLE === 'TEACHER' || USER_ROLE === 'STUDENT') {
-        //         navigate('/user/book')
-        //     }
-        // } else {
-        //     setSnackBar({ isOpen: true, message: result.data.message, type: "warning" })
-        // }
-        // }
-        // catch (e) {
-        //     setSnackBar({ isOpen: true, message: 'Something went wrong', type: "error" })
-        // }
-        // finally {
-        setLoading(false);
-        // }
+        try {
+            setLoading(true);
+            console.log(inputs, 'input')
+            const result = await usersApi.createNewUser(inputs);
+            console.log(result.data.success, 'result')
+            if (result.data.success) {
+                console.log(result.data, 'result12323')
+                setSnackBar({ isOpen: true, message: result.data.message, type: "success" })
+                console.log(inputs.user_id, 'id')
+                const sendEmailResponse = await sendmailApi.sendMail({
+                    user_id: inputs.user_id
+                });
+                console.log(sendEmailResponse, 'sxx')
+                // if (sendEmailResponse.data.success) {
+                //     console.log('send')
+                // } else {
+                //     console.log('eror')
+                // }
+                // navigate('/login')
+            } else {
+                setSnackBar({ isOpen: true, message: result.data.message, type: "warning" })
+            }
+        }
+        catch (e) {
+            setSnackBar({ isOpen: true, message: 'Something went wrong', type: "error" })
+        }
+        finally {
+            setLoading(false);
+        }
     }
 
     return (
         <div className="login register">
             <div style={{ marginLeft: 0, paddingLeft: 0 }}>
                 <form className="login-form" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '70vw' }}>
-                    <section style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh', justifyContent: 'flex-start', alignSelf: 'center' }}>
+                    <section style={{ marginBottom: '-13vh', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', height: '80vh', justifyContent: 'flex-start', alignSelf: 'center', marginTop: '10vh' }}>
                         <div style={{ display: 'flex', flexDirection: 'column', width: '50%' }}>
                             <input
 
@@ -154,7 +157,7 @@ export const RegisterForm = () => {
                             </FormControl>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', width: '50%', marginTop: '15px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', width: '50%' }}>
 
                             <input
                                 required autoComplete='off' onChange={handleChange}
@@ -164,12 +167,11 @@ export const RegisterForm = () => {
 
                             <div style={{ textAlign: 'left', marginLeft: '32px' }}>
                                 {!inputs.email && !isValid && (
-                                    <div className='register-error-message' className='register__validation-error' style={{ color: 'red' }}>Email is required</div>
+                                    <div className='register__validation-error' style={{ color: 'red' }}>Email is required</div>
                                 )}
                                 {inputs.email && !validEmailFormat && (
                                     <span className='register__validation-error' style={{ color: 'red' }}>Invalid Email</span>
                                 )}
-
 
                             </div>
                             <input onChange={handleValidPassword} className={`input_password ${!inputs.password && !isValid ? 'invalid' : ''} `} value={inputs.password || ''} type="password" placeholder="Password" id="password" name="password"></input>

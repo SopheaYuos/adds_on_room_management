@@ -5,7 +5,7 @@ import Room from "./pages/Room/Room"
 import MiniDrawer from "./pages/Drawer";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Booking from "./pages/Booking/Booking";
-import { Login } from "./pages/Login/Login";
+import { Login } from "./pages/Auth/Login";
 import User from "./pages/Users/Main";
 import Book from "./pages/Users/UserBooking/Book";
 import BookedRoom from "./pages/Users/BookedRooms/BookedRooms";
@@ -13,7 +13,14 @@ import NotFound from "./pages/NotFound";
 import jwt_decode from "jwt-decode";
 // import io from 'socket.io-client'
 import Test from "./pages/Test";
-import { RegisterForm } from "./pages/Login/RegisterForm";
+import { Login2 } from "./pages/Auth/Login/Login2";
+import { ForgotPassword } from "./pages/Auth/ForgotPassword/forgotPassword";
+import { RegisterForm } from "./pages/Auth/RegisterForm";
+import { Register2 } from "./pages/Auth/Register/Register2";
+// import { RegisterForm } from "./pages/Auth/RegisterForm";
+// import RegisterPage from "./pages/Auth/Register/Register";
+// import { Login2 } from "./pages/Auth/Login2";
+// import { ForgotPassword } from "./pages/Auth/forgotPassword";
 // const socket = io('http://localhost:4000', { transports: ['websocket'] });
 
 function getCookie(name) {
@@ -76,8 +83,20 @@ export const router = createBrowserRouter([
     element: <Login />
   },
   {
+    path: '/login2',
+    element: <Login2 />
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPassword />
+  },
+  {
     path: '/register',
     element: <RegisterForm />
+  },
+  {
+    path: '/register2',
+    element: <Register2 />
   },
   {
     path: '/test',
