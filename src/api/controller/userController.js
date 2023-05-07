@@ -6,7 +6,7 @@ module.exports = {
     getAllUsers: async function getUsers() {
 
         const sql = `SELECT * FROM users `;
-        const result = await (await promiseCon).query(sql)
+        const result = await promiseCon.query(sql)
         return result[0];
 
     },
@@ -21,6 +21,9 @@ module.exports = {
         const decpasword = decryptPass(encpassword, reqBody.password);
         console.log(encpassword);
         console.log(decpasword);
+        const verifiedExistingUser = await this.getUserbyID(reqBody.user_id);
+        if (verifiedExistingUser.length !== 0) return 'Student ID Existed';
+        // if (verifiedExistingUser)
         const sql = `
         INSERT INTO users (user_id,name,password,gender,department,mobile,email,position, role,created,modified)
             values ("${reqBody.user_id}","${reqBody.name}", "${encpassword}", "${reqBody.gender}", "${reqBody.department}","${reqBody.mobile}", "${reqBody.email}", "${reqBody.position}", "${reqBody.role}",  "${created}","${created}" )

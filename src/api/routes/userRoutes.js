@@ -16,17 +16,26 @@ module.exports = function (app) {
         .post(async (req, res) => {
             //req.body
             const result = await User.AddUser(req.body);
-            if (result[0].affectedRows == 1) {
+            console.log(result, 'heisdf')
+            if (typeof result === 'string') {
                 res.status(200).json({
-                    success: true,
-                    message: 'Added successfully'
+                    success: false,
+                    message: 'Existed user id'
                 });
             } else {
-                res.status(404).json({
-                    success: false,
-                    message: 'Fail to add'
-                });
+                if (result[0].affectedRows == 1) {
+                    res.status(200).json({
+                        success: true,
+                        message: 'Added successfully'
+                    });
+                } else {
+                    res.status(404).json({
+                        success: false,
+                        message: 'Fail to add'
+                    });
+                }
             }
+
 
         })
         .put(async (req, res) => {
