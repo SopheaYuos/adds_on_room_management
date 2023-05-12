@@ -138,6 +138,13 @@ form{
 .input-div.focus > .i > svg, .input-div.focus > .after svg{
 	color: #38d39f;
 }
+.input-div.invalid > .i > svg{
+	color: #ff5757;
+}
+.input-div.invalid::before, .input-div.invalid::after {
+	width: 50%;
+	background: #ff5757;
+}
 
 .input-div > div > input{
 	position: absolute;

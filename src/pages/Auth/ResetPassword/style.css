@@ -17,7 +17,7 @@ body{
 	z-index: -1;
 }
 
-.register-container{
+.reset-password-container{
     width: 100vw;
     height: 100vh;
     display: grid;
@@ -25,21 +25,19 @@ body{
     grid-gap :7rem;
     padding: 0 2rem;
 }
-
+.reset-password-container .img  img {
+	height: 484px;
+	position: absolute;
+	bottom: 0;
+	left: 63px;
+}
 .img{
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 }
-.register-container .img > img {
-	transform: scale(1.2);
-	position: absolute;
-	bottom: 35px;
-	left: 25px;
 
-}
-
-.register-content{
+.reset-password-content{
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
@@ -54,18 +52,26 @@ form{
 	width: 360px;
 }
 
-.register-content img{
+.reset-password-content img{
     height: 100px;
+	
 }
 
-.register-content h2{
+.reset-password-content h2{
 	margin: 15px 0;
 	color: #333;
-	text-transform: uppercase;
-	font-size: 2rem;
+	text-transform: capitalize;
+	font-size: 2.5rem;
+	text-align: left;
+}
+.reset-password-content h4{
+	margin: 1rem 0 1.5rem 0;
+	color: #747474;
+	font-size: 0.8rem;
+	text-align: left;
 }
 
-.register-container .register-content .input-div{
+.reset-password-content .input-div{
 	position: relative;
     display: grid;
     grid-template-columns: 7% 93%;
@@ -74,7 +80,7 @@ form{
     border-bottom: 2px solid #d9d9d9;
 }
 
-.register-container .register-content .input-div.one{
+.reset-password-content .input-div.one{
 	margin-top: 0;
 }
 
@@ -104,7 +110,7 @@ form{
 	transition: .3s;
 }
 
-.input-div:before, .input-div:after{
+.input-div:before{
 	content: '';
 	position: absolute;
 	bottom: -2px;
@@ -126,7 +132,7 @@ form{
 	width: 50%;
 }
 
-.register-container .input-div.focus > div > h5{
+.input-div.focus > div > h5{
 	top: -5px;
 	font-size: 15px;
 }
@@ -154,52 +160,21 @@ form{
 	margin-bottom: 4px;
 }
 
-.register-content .forgot-password{
+.reset-password-content .reset-password{
 	display: block;
 	text-align: right;
 	text-decoration: none;
-	color: #797979;
+	color: #999;
 	font-size: 0.9rem;
 	transition: .3s;
 }
 
-.register-content .forgot-password:hover{
+.reset-password-content .reset-password:hover{
 	color: #38d39f;
 	cursor: pointer;
 }
-.register-content .register-account{
-	color: #747474;
-	margin-right: 5px;
-}
-.register-content .register-account > .content{
-	color: #4d4d4d;
-	cursor: pointer;
-	transition: .4s;
-	border-bottom: 1px;
-	height: 0;
-	position:relative;
-}
-.register-content .register-account > .content:hover{
-	width: 100%;
-	color: #1eaf7f;
-	height: 2px;
-}
-.register-content .register-account .content:before{
-	content: '';
- 	position: absolute;
-	width: 0;
-	/* left: 189px; */
-	top: 18px;
-	height: 2px;
-	background-color: #1eaf7f;
-	transition: all 0.3s ease-in-out;
-}
-.register-content .register-account span:hover::before{
-	 width: 100%;
-}
 
-
-.register-container .btn{
+.reset-password-content .btn{
 	display: block;
 	width: 100%;
 	height: 50px;
@@ -212,16 +187,16 @@ form{
 	color: #fff;
 	font-family: 'Poppins', sans-serif;
 	text-transform: uppercase;
-	margin: 1rem 0;
+	margin: 2rem 0;
 	cursor: pointer;
 	transition: .5s;
 }
-.btn:hover{
+.reset-password-content .btn:hover{
 	background-position: right;
 }
 
 @media screen and (max-width: 1050px){
-	.register-container{
+	.reset-password-container{
 		grid-gap: 5rem;
 	}
 }
@@ -231,7 +206,7 @@ form{
 		width: 290px;
 	}
 
-	.register-content h2{
+	.reset-password-content h2{
         font-size: 2.4rem;
         margin: 8px 0;
 	}
@@ -242,7 +217,7 @@ form{
 }
 
 @media screen and (max-width: 900px){
-	.register-container{
+	.reset-password-container{
 		grid-template-columns: 1fr;
 	}
 
@@ -254,7 +229,7 @@ form{
 		display: none;
 	}
 
-	.register-content{
+	.reset-password-content{
 		justify-content: center;
 	}
 }

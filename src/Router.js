@@ -17,6 +17,7 @@ import { Login2 } from "./pages/Auth/Login/Login2";
 import { ForgotPassword } from "./pages/Auth/ForgotPassword/forgotPassword";
 import { RegisterForm } from "./pages/Auth/RegisterForm";
 import { Register2 } from "./pages/Auth/Register/Register2";
+import { ResetPassword } from "./pages/Auth/ResetPassword/ResetPassword";
 // import { RegisterForm } from "./pages/Auth/RegisterForm";
 // import RegisterPage from "./pages/Auth/Register/Register";
 // import { Login2 } from "./pages/Auth/Login2";
@@ -89,6 +90,10 @@ export const router = createBrowserRouter([
   {
     path: '/forgot-password',
     element: <ForgotPassword />
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPassword />
   },
   {
     path: '/register',

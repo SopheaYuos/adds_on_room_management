@@ -142,10 +142,10 @@ export const Login2 = () => {
                     <img src={"/assets/bg.svg"} />
                 </div>
                 <div className="login-content">
-                    <form action="index.html">
+                    <form onSubmit={handleSubmit}>
                         <img src={"/assets/avatar.svg"} />
                         <h2 className="title">Welcome</h2>
-                        <div className={isFocused ? 'input-div one focus' : 'input-div one'}>
+                        <div className={`input-div one ${isFocused ? 'focus' : ''} ${!isValid && !inputs.user_id ? 'invalid' : ''}`}>
                             <div className="i">
                                 <Person />
                             </div>
@@ -165,7 +165,7 @@ export const Login2 = () => {
 
                             </div>
                         </div>
-                        <div className={isPasswordFocus ? 'input-div pass focus' : 'input-div pass'} >
+                        <div className={`${isPasswordFocus ? 'input-div pass focus' : 'input-div pass'} ${!isValid && !inputs.password ? 'invalid' : ''}`} >
                             <div className="i">
                                 <Lock />
                             </div>
@@ -176,7 +176,7 @@ export const Login2 = () => {
                                     onBlur={!inputs.password ? handlePasswordBlur : handlePasswordFocus}
                                     onFocus={handlePasswordFocus}
                                     onChange={handleChange}
-                                    className={`input ${!inputs.password && !isValid ? 'invalid' : ''}`}
+                                    className='input'
                                     value={inputs.password || ''}
                                     type={isHide ? 'password' : 'text'}
                                     name="password"
@@ -198,9 +198,9 @@ export const Login2 = () => {
 
                     </form>
                 </div>
-            </div>
+            </div >
             <CustomizedSnackbars snackBar={snackBar} setSnackBar={setSnackBar} position={{ vertical: 'top', horizontal: 'right' }} />
 
-        </div>
+        </div >
     );
 }
