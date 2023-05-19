@@ -1,38 +1,14 @@
 var nodemailer = require('nodemailer');
 const promiseCon = require("../../config/promiseCon");
-// const generate6DigitCode = require('../../utils/SixDigitRandom');
-const EMAIL = process.env.EMAIl;
+const sendMail = require('../../utils/sendMail');
+
 module.exports = async function sendMailController(req, res) {
-  const { email_user, status, user_id } = req.body;
+  const { user_id, subject } = req.body;
   result = await (await promiseCon).query(`SELECT email FROM users where user_id = "${user_id}"`);
   console.log(result[0][0].email, 'emaillll');
-
-  // const sixDigitCode = generate6DigitCode();
-  var mailOptions = {
-    from: EMAIL,
-    to: result[0][0].email,
-    subject: 'Approval your booking',
-    Text: 'Send Mail',
-  };
-  console.log(mailOptions)
-  console.log(process.env.PASSWORD)
-  //email admin
-  var transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: EMAIL,
-      pass: process.env.PASSWORD
-    },
-    // tls: {
-    //   rejectUnauthorized: false
-    // }
-  });
-
-  transporter.sendMail(mailOptions, function (error, reply) {
-    if (error) {
-      res.status(400).json({ success: false, message: error });
-    } else {
-      res.status(200).json({ success: true, message: "Mail send successfully" });
-    }
-  });
+  // generateUserSecret(user_id);
+  // const code = generateOTP(user_id);
+  // const res2 = 
+  // console.log(res2, 'res in senmailcontroller.js')
+  return await sendMail(user_id, result[0][0].email, subject);
 }

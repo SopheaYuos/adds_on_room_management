@@ -11,17 +11,17 @@ module.exports = {
     validateOTP: (req) => {
         const code = req.body.code;
         const user_id = req.body.user_id;
-        console.log(req.body, 'her we goss')
-        const isValid = validateOTP(user_id, code);
-
+        console.log(code, user_id, 'her we goss')
+        const isValid = validateOTP(String(user_id), String(code));
+        // const isValid = true;
         if (isValid) {
             // res.send('TOTP is valid');
-            return 'valid'
+            return true;
             // Allow user to proceed with authentication
-        } else {
-            return 'invalid'
-            // res.status(400).send('TOTP is invalid');
-            // Display error message to user
         }
+        return false
+        // res.status(400).send('TOTP is invalid');
+        // Display error message to user
+
     }
 }

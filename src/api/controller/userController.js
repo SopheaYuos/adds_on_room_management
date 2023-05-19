@@ -1,6 +1,8 @@
 const promiseCon = require("../../config/promiseCon");
 const formatDate = require("../../utils/formatDate");
 const { encryptPass, decryptPass } = require("../../utils/encryptDecrypt");
+const sendMailController = require("./sendMailController");
+const sendMail = require("../../utils/sendMail");
 
 module.exports = {
     getAllUsers: async function getUsers() {
@@ -15,29 +17,89 @@ module.exports = {
         const result = await (await promiseCon).query(sql);
         return result[0];
     },
+    UserByEmail: async function getUserByEmail(params) {
+        if (!params.value || !params.column) {
+            return {
+                status: 400,
+                message: 'Invalid request parameter',
+                isSuccess: false,
+            }
+        }
+        try {
+            const sql = `CALL GetUserProc('${params.value}', '${params.column}');`;
+            const result = await (await promiseCon).query(sql);
+            let isUserExistedInDB = false;
+            if (result[0][0].length > 0) {
+                isUserExistedInDB = true;
+                await sendMail(result[0][0][0].user_id, result[0][0][0].email, params.subject);
+
+                return {
+                    status: 200,
+                    message: 'If you entered a correct email, we will send verification code to your email',
+                    isSuccess: true,
+                    data: result[0][0]
+                }
+            } else {
+                return {
+                    status: 200,
+                    message: 'If you entered a correct email, we will send verification code to your email',
+                    isSuccess: false,
+                }
+            }
+        } catch (err) {
+            return {
+                status: 400,
+                message: 'Somthing went wrong',
+                isSuccess: false,
+
+            }
+        }
+    },
+    // AddUser: async function addnew(reqBody) {
+    //     const created = formatDate(new Date());
+    //     const encpassword = encryptPass(reqBody.password);
+    //     const decpasword = decryptPass(encpassword, reqBody.password);
+    //     console.log(encpassword);
+    //     console.log(decpasword);
+    //     const verifiedExistingUser = await this.getUserbyID(reqBody.user_id);
+    //     if (verifiedExistingUser.length !== 0) return 'Student ID Existed';
+    //     // if (verifiedExistingUser)
+    //     const sql = `
+    //     INSERT INTO users (user_id,name,password,gender,department,mobile,email,position, role,created,modified)
+    //         values ("${reqBody.user_id}","${reqBody.name}", "${encpassword}", "${reqBody.gender || "NULL"}", "${reqBody.department ?? "NULL"}","${reqBody.mobile || "NULL"}", "${reqBody.email}", "${reqBody.position}", "${reqBody.role}",  "${created}","${created}" )
+    //     `;
+    //     const result = await (await promiseCon).query(sql);
+    //     return result;
+
+    // },
     AddUser: async function addnew(reqBody) {
         const created = formatDate(new Date());
         const encpassword = encryptPass(reqBody.password);
         const decpasword = decryptPass(encpassword, reqBody.password);
-        console.log(encpassword);
-        console.log(decpasword);
         const verifiedExistingUser = await this.getUserbyID(reqBody.user_id);
         if (verifiedExistingUser.length !== 0) return 'Student ID Existed';
-        // if (verifiedExistingUser)
-        const sql = `
-        INSERT INTO users (user_id,name,password,gender,department,mobile,email,position, role,created,modified)
-            values ("${reqBody.user_id}","${reqBody.name}", "${encpassword}", "${reqBody.gender}", "${reqBody.department}","${reqBody.mobile}", "${reqBody.email}", "${reqBody.position}", "${reqBody.role}",  "${created}","${created}" )
-        `;
-        const result = await (await promiseCon).query(sql);
-        return result;
 
+        const sql = "CALL AddUserProc(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        const values = [
+            reqBody.user_id,
+            reqBody.name,
+            encpassword,
+            reqBody.gender,
+            reqBody.department,
+            reqBody.mobile,
+            reqBody.email,
+            reqBody.position,
+            reqBody.role,
+            created,
+            created
+        ];
+
+        const result = await (await promiseCon).query(sql, values);
+        return result;
     },
     updateUser: async function updateUser(reqBody) {
         const created = formatDate(new Date());
         const encpassword = encryptPass(reqBody.password);
-        // const decpassword= decryptPass(encpassword, reqBody.password);
-        //  console.log(encpassword)
-        // console.log(decpassword)
         const sql = `
         UPDATE users SET 
                         user_id= "${reqBody.user_id}",

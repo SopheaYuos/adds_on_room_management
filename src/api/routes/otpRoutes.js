@@ -14,7 +14,19 @@ module.exports = (app) => {
     app.route('/validate-otp')
         .post(async (req, res) => {
             const result = validateOTP(req);
-            res.send(result)
+            // res.send(result);
+            if (result) {
+                res.status(200).json({
+                    success: true,
+                    message: 'Valid verification code'
+                });
+                return;
+            }
+            res.status(200).json({
+                success: false,
+                message: 'Invalid verification code'
+            });
+
         }
         );
 }
