@@ -8,7 +8,7 @@
 	z-index: -1;
 }
 
-.container{
+.code-verification-container{
     width: 100vw;
     height: 100vh;
     display: grid;
@@ -16,14 +16,26 @@
     grid-gap :7rem;
     padding: 0 2rem;
 }
-
+.code-verification-container .img{
+	
+}
+.code-verification-container .img  img {
+	height: 484px;
+	position: absolute;
+	/* bottom: -10px;
+	left: 40px; */
+	height: 100%;
+	display:flex;
+	justify-content: center;
+	align-items: center;
+}
 .img{
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 }
 
-.login-content{
+.code-verification-content{
 	display: flex;
 	justify-content: flex-start;
 	align-items: center;
@@ -38,27 +50,35 @@ form{
 	width: 360px;
 }
 
-.login-content img{
+.code-verification-content img{
     height: 100px;
+	
 }
 
-.login-content h2{
+.code-verification-content h2{
 	margin: 15px 0;
 	color: #333;
-	text-transform: uppercase;
-	font-size: 2.9rem;
+	text-transform: capitalize;
+	font-size: 2.5rem;
+	text-align: left;
+}
+.code-verification-content h4{
+	margin: 1rem 0 1.5rem 0;
+	color: #747474;
+	font-size: 0.8rem;
+	text-align: left;
 }
 
-.login-content .input-div{
+.code-verification-content .input-div{
 	position: relative;
     display: grid;
-    grid-template-columns: 7% 86% 7%;
+    grid-template-columns: 7% 93%;
     margin: 25px 0;
     padding: 5px 0;
     border-bottom: 2px solid #d9d9d9;
 }
 
-.login-content .input-div.one{
+.code-verification-content .input-div.one{
 	margin-top: 0;
 }
 
@@ -69,19 +89,8 @@ form{
 	align-items: center;
 }
 
-.i path{
+.i i{
 	transition: .3s;
-}
-.input-div .after{
-	color: #d9d9d9;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	position: relative;
-	/* left: -24px; */
-}
-.input-div .after:hover{
-	cursor: pointer;
 }
 
 .input-div > div{
@@ -99,7 +108,7 @@ form{
 	transition: .3s;
 }
 
-.input-div:before, .input-div:after{
+.input-div:before{
 	content: '';
 	position: absolute;
 	bottom: -2px;
@@ -126,15 +135,8 @@ form{
 	font-size: 15px;
 }
 
-.input-div.focus > .i > svg, .input-div.focus > .after svg{
+.input-div.focus > .i > svg{
 	color: #38d39f;
-}
-.input-div.invalid > .i > svg{
-	color: #ff5757;
-}
-.input-div.invalid::before, .input-div.invalid::after {
-	width: 50%;
-	background: #ff5757;
 }
 
 .input-div > div > input{
@@ -156,52 +158,21 @@ form{
 	margin-bottom: 4px;
 }
 
-.login-content .forgot-password{
+.code-verification-content .code-verification{
 	display: block;
 	text-align: right;
 	text-decoration: none;
-	color: #797979;
+	color: #999;
 	font-size: 0.9rem;
 	transition: .3s;
 }
 
-.login-content .forgot-password:hover{
+.code-verification-content .code-verification:hover{
 	color: #38d39f;
 	cursor: pointer;
 }
-.login-content .register-account{
-	color: #747474;
-	margin-right: 5px;
-}
-.login-content .register-account > .content{
-	color: #4d4d4d;
-	cursor: pointer;
-	transition: .4s;
-	border-bottom: 1px;
-	height: 0;
-	position:relative;
-}
-.login-content .register-account > .content:hover{
-	width: 100%;
-	color: #1eaf7f;
-	height: 2px;
-}
-.login-content .register-account .content:before{
-	content: '';
- 	position: absolute;
-	width: 0;
-	/* left: 189px; */
-	top: 18px;
-	height: 2px;
-	background-color: #1eaf7f;
-	transition: all 0.3s ease-in-out;
-}
-.login-content .register-account span:hover::before{
-	 width: 100%;
-}
 
-
-.btn{
+.code-verification-content .btn{
 	display: block;
 	width: 100%;
 	height: 50px;
@@ -214,16 +185,16 @@ form{
 	color: #fff;
 	font-family: 'Poppins', sans-serif;
 	text-transform: uppercase;
-	margin: 1rem 0;
+	margin: 2rem 0;
 	cursor: pointer;
 	transition: .5s;
 }
-.btn:hover{
+.code-verification-content .btn:hover{
 	background-position: right;
 }
 
 @media screen and (max-width: 1050px){
-	.container{
+	.code-verification-container{
 		grid-gap: 5rem;
 	}
 }
@@ -233,7 +204,7 @@ form{
 		width: 290px;
 	}
 
-	.login-content h2{
+	.code-verification-content h2{
         font-size: 2.4rem;
         margin: 8px 0;
 	}
@@ -244,7 +215,7 @@ form{
 }
 
 @media screen and (max-width: 900px){
-	.container{
+	.code-verification-container{
 		grid-template-columns: 1fr;
 	}
 
@@ -256,7 +227,7 @@ form{
 		display: none;
 	}
 
-	.login-content{
+	.code-verification-content{
 		justify-content: center;
 	}
 }

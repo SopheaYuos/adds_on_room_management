@@ -1,13 +1,4 @@
-*{
-	padding: 0;
-	margin: 0;
-	box-sizing: border-box;
-}
 
-body{
-    font-family: 'Poppins', sans-serif;
-    overflow: hidden;
-}
 
 .wave{
 	position: fixed;
@@ -68,7 +59,7 @@ form{
 .register-container .register-content .input-div{
 	position: relative;
     display: grid;
-    grid-template-columns: 7% 93%;
+    grid-template-columns: 7% 86% 7%;
     margin: 25px 0;
     padding: 5px 0;
     border-bottom: 2px solid #d9d9d9;
@@ -197,6 +188,9 @@ form{
 .register-content .register-account span:hover::before{
 	 width: 100%;
 }
+/* .register-container .input-password{
+	padding-right: 1.78rem;
+} */
 
 
 .register-container .btn{

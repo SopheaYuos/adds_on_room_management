@@ -1,67 +1,11 @@
 import React, { useState } from 'react';
-import jwt_decode from 'jwt-decode';
 import './style.css';
-import usersApi from '../../../api/usersApi';
 import { useNavigate } from 'react-router-dom';
-import { LoadingButton } from '@mui/lab';
 import CustomizedSnackbars from '../../../components/Snackbar';
-import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Slide } from '@mui/material';
-import { isValidPassword, isValidEmail, isValidCambodiaPhone, passwordRuleMessages } from '../../../helper/validateFormatHelper';
-import { Cancel, CheckBox, Lock, Person, AlternateEmail } from '@mui/icons-material';
-import sendmailApi from '../../../api/sendmailApi';
-import LoginApi from '../../../api/loginApi';
+import { Slide } from '@mui/material';
+import { AlternateEmail } from '@mui/icons-material';
+import usersApi from '../../../api/usersApi';
 export const ForgotPassword = () => {
-    // const inputHTML = document.querySelectorAll(".input");
-
-
-    // function addcl() {
-    //     let parent = this.parentNode.parentNode;
-    //     parent.classList.add("focus");
-    // }
-
-    // function remcl() {
-    //     let parent = this.parentNode.parentNode;
-    //     if (this.value == "") {
-    //         parent.classList.remove("focus");
-    //     }
-    // }
-    // inputHTML.forEach(input => {
-    //     input.addEventListener("focus", addcl);
-    //     input.addEventListener("blur", remcl);
-    // });
-    // const navigate = useNavigate();
-    // const [inputs, setInputs] = useState({});
-    // const [loading, setLoading] = useState(false);
-    // const [snackBar, setSnackBar] = useState({ isOpen: false, message: "", type: "", Transition: Slide });
-    // const [isValid, setIsValid] = useState(true);
-    // const [validPasswordFormat, setValidPasswordFormat] = useState(passwordRuleMessages);
-    // const [validEmailFormat, setValidEmailFormat] = useState();
-    // const [validPhoneFormat, setvalidPhoneFormat] = useState();
-
-    // const handleChange = (event) => {
-    //     const name = event.target.name;
-    //     const value = event.target.value;
-    //     setIsValid(true);
-    //     setInputs(values => ({ ...values, [name]: value }));
-
-    //     if (name === 'email') {
-    //         setValidEmailFormat(isValidEmail(value));
-    //     }
-    //     else if (name === 'mobile') {
-    //         console.log(isValidCambodiaPhone(inputs.mobile), 'phone');
-    //         setvalidPhoneFormat(isValidCambodiaPhone(value));
-    //     }
-
-    // }
-    // const handleGenderChange = (event) => {
-    //     console.log(event.target.value, 'gender');
-    //     // setGender(event.target.value);
-    //     setInputs(values => ({ ...values, gender: event.target.value }))
-    // }
-    // const handleValidPassword = (event) => {
-    //     setValidPasswordFormat(isValidPassword(event.target.value));
-    //     setInputs(values => ({ ...values, password: event.target.value }))
-    // }
     const [isFocused, setIsFocused] = useState(false);
     const [isPasswordFocus, setIsPasswordFocus] = useState(false);
     function handleFocus() {
@@ -93,27 +37,36 @@ export const ForgotPassword = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (!inputs.user_id || !inputs.password) {
+        if (!inputs.email) {
             setSnackBar({ isOpen: true, message: "No valid input", type: "info" })
             setIsValid(false);
             return;
         };
         try {
             setLoading(true);
-            const result = await LoginApi(inputs)
-            if (result.success) {
-                setSnackBar({ isOpen: true, message: result.message, type: "success" })
+            const req = {
+                value: inputs.email,
+                column: "user_id, email",
+                subject: "Verify your email to create a new password"
+            };
+            // const result = await usersApi.forgotPass(inputs)
+            const { data, message, success } = (await usersApi.forgotPassword(req)).data;
+            console.log(message, success, 'result 2134');
+            console.log(data[0]?.user_id ?? '2222', 'abc')
+            const encode = window.btoa(JSON.stringify(
+                {
+                    user_id: data[0]?.user_id ?? '',
+                    from_parent: 'forgot_password',
+                    to_child: '/reset-password'
+                }));
+            if (success) {
+                setSnackBar({ isOpen: true, message: message, type: "success" });
+                navigate(`/code-verification?u=${encode}`);
 
-                document.cookie = "token=" + result?.token;
-                const USER_ROLE = jwt_decode(result.token).user_role;
-                if (USER_ROLE === 'ADMIN') {
-                    navigate('/dashboard')
-                }
-                if (USER_ROLE === 'TEACHER' || USER_ROLE === 'STUDENT') {
-                    navigate('/user/book')
-                }
             } else {
-                setSnackBar({ isOpen: true, message: result.message, type: "warning" })
+                setSnackBar({ isOpen: true, message: message, type: "success" });
+                navigate(`/code-verification?u=${encode}`);
+
             }
         }
         catch (e) {
@@ -135,23 +88,23 @@ export const ForgotPassword = () => {
                     <img src={"/assets/forgot_password.svg"} />
                 </div>
                 <div className="forgot-password-content">
-                    <form action="index.html">
+                    <form onSubmit={handleSubmit}>
                         {/* <img src={"/assets/forgot_password_profile.svg"} /> */}
                         <h2 className="title">Forgot <div>Password?</div></h2>
-                        <h4>Please enter the email address associated with your account</h4>
-                        <div className={isFocused ? 'input-div one focus' : 'input-div one'}>
-                            <div className="i">
+                        <h4>If you entered a correct email, we will send verification code to your email</h4>
+                        <div className={`input-div one ${isFocused ? 'focus' : ''} ${!isValid ? 'invalid' : ''}`}>
+                            <div div className="i">
                                 <AlternateEmail />
                             </div>
                             <div className="div">
                                 <h5>Enter email</h5>
                                 <input
-                                    onBlur={!inputs.user_id ? handleBlur : handleFocus}
+                                    onBlur={!inputs.email ? handleBlur : handleFocus}
                                     onFocus={handleFocus}
                                     onChange={handleChange}
-                                    value={inputs.user_id || ''}
-                                    name="user_id"
-                                    id="user_id"
+                                    value={inputs.email || ''}
+                                    name="email"
+                                    id="email"
                                     type="text"
                                     className="input"
                                     autoComplete="off"
@@ -162,9 +115,9 @@ export const ForgotPassword = () => {
                         <input type="submit" className="btn" value="Submit" />
                     </form>
                 </div>
-            </div>
+            </div >
             <CustomizedSnackbars snackBar={snackBar} setSnackBar={setSnackBar} position={{ vertical: 'top', horizontal: 'right' }} />
 
-        </div>
+        </div >
     );
 }

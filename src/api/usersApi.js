@@ -12,6 +12,24 @@ export default {
             return err;
         }
     },
+    async forgotPassword(data) {
+        try {
+            return await axios.post(URL + '/user/forgot-password', data);
+        }
+        catch (err) {
+            console.log(err)
+            return err;
+        }
+    },
+    async resetPassword(data) {
+        try {
+            return await axios.post(URL + '/user/reset-password', data);
+        }
+        catch (err) {
+            console.log(err)
+            return err;
+        }
+    },
     async getOneUser(id) {
         return await axios.get(URL + `/users/${id}`);
     },
