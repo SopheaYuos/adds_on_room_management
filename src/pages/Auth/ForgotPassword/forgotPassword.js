@@ -51,8 +51,6 @@ export const ForgotPassword = () => {
             };
             // const result = await usersApi.forgotPass(inputs)
             const { data, message, success } = (await usersApi.forgotPassword(req)).data;
-            console.log(message, success, 'result 2134');
-            console.log(data[0]?.user_id ?? '2222', 'abc')
             const encode = window.btoa(JSON.stringify(
                 {
                     user_id: data[0]?.user_id ?? '',
@@ -85,15 +83,14 @@ export const ForgotPassword = () => {
             <img className="wave" src={"/assets/wave.png"} />
             <div className="forgot-password-container">
                 <div className="img">
-                    <img src={"/assets/forgot_password.svg"} />
+                    <img src="/assets/forgot_password.svg" />
                 </div>
                 <div className="forgot-password-content">
                     <form onSubmit={handleSubmit}>
-                        {/* <img src={"/assets/forgot_password_profile.svg"} /> */}
                         <h2 className="title">Forgot <div>Password?</div></h2>
                         <h4>If you entered a correct email, we will send verification code to your email</h4>
                         <div className={`input-div one ${isFocused ? 'focus' : ''} ${!isValid ? 'invalid' : ''}`}>
-                            <div div className="i">
+                            <div className="i">
                                 <AlternateEmail />
                             </div>
                             <div className="div">

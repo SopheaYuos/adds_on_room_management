@@ -159,7 +159,7 @@ export default function User() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar sx={{ backgroundColor: '#1565c0', overflow: 'hidden' }} position="fixed">
+            <AppBar sx={{ backgroundColor: '#1565c0' }} position="fixed">
                 <Toolbar>
 
                     <Typography

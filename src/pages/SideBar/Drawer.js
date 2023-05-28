@@ -25,8 +25,7 @@ import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Stack } from '@mui/system';
 import { Avatar, GlobalStyles, Menu, MenuItem } from '@mui/material';
-import '../index.css'
-import AuthService from '../auth/authService';
+import '../../index.css';
 import { AccountCircle } from '@material-ui/icons';
 
 const drawerWidth = 180;
@@ -207,9 +206,9 @@ function MiniDrawer() {
 
   return (
 
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex' }} >
       <CssBaseline />
-      <AppBar position="fixed" open={false}>
+      <AppBar position="fixed" open={false} >
         <Toolbar>
           <IconButton
             color="inherit"
@@ -242,15 +241,14 @@ function MiniDrawer() {
           </Stack>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
+      <Drawer variant="permanent" open={open} className='drawer__sidebar-container'>
+        <DrawerHeader className='thisis2' >
           <IconButton onClick={handleDrawerClose}>
             {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
         <Divider />
-
-        <List>
+        <List style={{ border: 'none !important' }}>
 
           {sideBarMainFeatures.map((item, index) => (
 
@@ -258,13 +256,14 @@ function MiniDrawer() {
               key={index} disablePadding sx={{ display: 'block' }}
               style={({ isActive }) => ({
 
-                color: isActive ? 'blue' : 'black',
+                color: isActive ? 'var(--primary-color)' : 'black',
                 backgroundColor: isActive ? 'rgba(245, 245, 240, 0.7)' : '',
               })}
               component={NavLink} to={`${item.path}`}
             >
 
               <ListItemButton
+              disableRipple
                 LinkComponent={`${item.path}`}
                 sx={{
                   minHeight: 48,
@@ -274,13 +273,13 @@ function MiniDrawer() {
               >
                 <ListItemIcon
                   component={NavLink}
-                  className={({ isActive, isPending }) =>
+                  className={`${({ isActive, isPending }) =>
                     isActive
                       ? "active"
                       : isPending
                         ? "pending"
                         : ""
-                  }
+                  }`}
                   sx={{
                     minWidth: 0,
                     mr: open ? 3 : 'auto',

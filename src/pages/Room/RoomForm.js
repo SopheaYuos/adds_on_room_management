@@ -4,6 +4,7 @@ import Controls from "../../components/controls/Controls";
 import { useForm, Form } from "../../components/useForm";
 // import * as roomService from "../../services/roomService";
 import roomApi from "../../api/roomsApi";
+import CustomInput from "../../components/inputComponent/inputComponent";
 
 const initialFValues = {
   id: 0,
@@ -71,7 +72,7 @@ export default function RoomForm(props) {
         onChange={handleInputChange}
         error={errors.roomtype}
       />
-
+      <CustomInput/>
       <Grid sx={{ paddingRight: "15" }}>
         <Controls.Button type="submit" text="Submit" />
         <Controls.Button text="Reset" color="primary" onClick={resetForm} />

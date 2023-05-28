@@ -1,9 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&display=swap');
+
+:root{
+  --primary-color: #32be8f;
+  --primary-warning-color: #ff5757;
+}
 body {
-  margin: 0;
+  /* margin: 0;
   font-family: 'Plus Jakarta Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale; */
 }
 
 code {
@@ -33,7 +38,7 @@ code {
   content: "";
   width: 5px;
   height: 48px;
-  background-color: #1565c0;
+  background-color: var(--primary-color);
   left: 0;
   position: absolute;
   display: block;
@@ -41,9 +46,12 @@ code {
 }
 
 .active svg{
-  color: #1565c0
+  color: var(--primary-color)
 }
 .activeStyle{
   color: green;
 }
 
+.drawer__sidebar-container > div{
+  border: none;
+}

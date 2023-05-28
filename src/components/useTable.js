@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
         },
         '& tbody tr:hover': {
             backgroundColor: '#fffbf2',
-            cursor: 'pointer',
+            // cursor: 'pointer',
         },
     },
 }))
@@ -46,7 +46,7 @@ export default function useTable(records, headCells, filterFn) {
             setOrderBy(cellId)
         }
 
-        return (<TableHead>
+        return (<TableHead id="room_table-header">
             <TableRow>
                 {
                     headCells.map(headCell => (

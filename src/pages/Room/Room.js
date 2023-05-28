@@ -8,12 +8,11 @@ import {
   TableCell,
   Toolbar,
   InputAdornment,
+  Chip,
 } from "@mui/material";
 import useTable from "../../components/useTable";
-// import * as roomService from "../../services/roomService";
-import roomService from "../../api/roomsApi";
 import Controls from "../../components/controls/Controls";
-import { Search } from "@material-ui/icons";
+import { Search, Visibility } from "@material-ui/icons";
 import AddIcon from "@material-ui/icons/Add";
 import Popup from "../../components/Popup";
 import EditOutlinedIcon from "@material-ui/icons/EditOutlined";
@@ -22,13 +21,15 @@ import Notification from "../../components/Notification";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import { makeStyles } from "@material-ui/core";
 import MeetingRoomRoundedIcon from "@mui/icons-material/MeetingRoomRounded";
-import style from "./style.css";
+import "./style.css";
 import roomsApi from "../../api/roomsApi";
+import { useNavigate } from "react-router-dom";
+import { groupBy } from "lodash-es";
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
-    margin: theme.spacing(5),
-    padding: theme.spacing(3),
+    // margin: theme.spacing(5),
+    padding: theme.spacing(4),
   },
   searchInput: {
     width: "75%",
@@ -40,14 +41,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const headCells = [
-  { id: "roomNo", label: "Room No" },
-  // { id: "subroom", label: "Sub Room" },
+  {id: "image", label: "Room image"},
+  { id: "roomNumber", label: "Room Number" },
   { id: "roomtype", label: "Room Type" },
+  { id: "HasSubRoom", label: "Has Sub Rooms" },
   { id: "actions", label: "Actions", disableSorting: true },
 ];
 
 export default function Room() {
   const classes = useStyles();
+  const navigate = useNavigate();
+
   const [recordForEdit, setRecordForEdit] = useState(null);
   const [records, setRecords] = useState([]);
   const [filterFn, setFilterFn] = useState({
@@ -59,18 +63,22 @@ export default function Room() {
   const [notify, setNotify] = useState({
     isOpen: false,
     message: "",
-    type: "",
+    type: "success",
   });
   const [confirmDialog, setConfirmDialog] = useState({
     isOpen: false,
     title: "",
     subTitle: "",
   });
-
+  // let groupRoom = [];
+  const [groupRoom, setGroupRoom] = useState([]);
   useEffect(() => {
     roomsApi.getAllRooms().then((res) => {
+      setGroupRoom(Object.keys(groupBy(res.data.data, 'room_name')))
+      console.log(groupRoom, 'sdf')
+
       setRecords(res.data.data);
-      console.log(res.data.data);
+      console.log(res);
     });
   }, []);
   const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } =
@@ -100,7 +108,7 @@ export default function Room() {
     resetForm();
     setRecordForEdit(null);
     setOpenPopup(false);
-    setRecords(roomsApi.getAllRooms());
+    setRecords(records);
     setNotify({
       isOpen: true,
       message: "Submitted Successfully",
@@ -112,6 +120,13 @@ export default function Room() {
     setRecordForEdit(item);
     setOpenPopup(true);
   };
+  const onViewRoomDetail = (item) =>{
+    //redirect
+    console.log(item, 'item')
+    navigate('/room/view-room-detail')
+    //show all rooms that includes subrooms and information
+    
+  }
 
   const onDelete = (id) => {
     setConfirmDialog({
@@ -119,7 +134,7 @@ export default function Room() {
       isOpen: false,
     });
     roomsApi.deleteRoom(id);
-    setRecords(roomsApi.getAllRooms());
+    setRecords(records);
     setNotify({
       isOpen: true,
       message: "Deleted Successfully",
@@ -128,14 +143,16 @@ export default function Room() {
   };
 
   return (
-    <>
+    
+    <div style={{ overflow: 'scroll' }}>
+     
       <PageHeader
         title="Room"
         subTitle="Room Information"
         icon={<MeetingRoomRoundedIcon color="primary" fontSize="large" />}
       />
       <Paper className={classes.pageContent}>
-        <Toolbar>
+        <Toolbar id="room__search-header-container">
           <Controls.Input
             label="Search Room"
             className={classes.searchInput}
@@ -162,45 +179,78 @@ export default function Room() {
           </div>
         </Toolbar>
         <TblContainer>
-          <TblHead />
-          <TableBody>
-            {recordsAfterPagingAndSorting().map((item) => (
-              <TableRow key={item.id}>
+          <TblHead  />
+          
 
-                <TableCell>{item.room_name}</TableCell>
-                <TableCell>{item.room_type}</TableCell>
-                <TableCell>
-                  <Controls.ActionButton
-                    onClick={() => {
-                      openInPopup(item);
-                    }}
-                  >
-                    <EditOutlinedIcon fontSize="small" />
-                  </Controls.ActionButton>
-                  <Controls.ActionButton
-                    onClick={() => {
-                      setConfirmDialog({
-                        isOpen: true,
-                        title: "Are you sure to delete this record?",
-                        subTitle: "You can't undo this operation",
-                        onConfirm: () => {
-                          onDelete(item.room_name);
-                        },
-                      });
-                    }}
-                  >
-                    <CloseIcon color="error" fontSize="small" />
-                  </Controls.ActionButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+           <TableBody>
+            {groupRoom.map((roomName) => {
+
+                let counter = 0;
+                    return (
+                      
+                        recordsAfterPagingAndSorting().map((item) =>{
+                            if (roomName === item.room_name && counter === 0){
+                              counter++;
+                              return (
+                               <TableRow key={roomName}>
+                                 <TableCell style={{ textAlign: 'center' }}><img src={item.room_image_url || "assets/fall-back-image.png"} height={100} /></TableCell>
+                                  <TableCell style={{ textAlign: 'center' }}>{item.room_name}</TableCell>
+                                  <TableCell style={{ textAlign: 'center' }}>{item.room_type}</TableCell>
+                                  <TableCell style={{ textAlign: 'center' }}>{item.sub_room_name ? <Chip label="Yes" style={{ backgroundColor: 'var(--primary-color)', color: '#fff' }} /> : <Chip label="No" style={{ backgroundColor: 'var(--primary-warning-color)', color: '#fff' }} />}</TableCell>
+                                  <TableCell style={{ textAlign: 'center' }}>
+                                    <Controls.ActionButton
+                                      onClick={() => {
+                                        openInPopup(item);
+                                      }}
+                                      >
+                                      <EditOutlinedIcon fontSize="small" />
+                                    </Controls.ActionButton>
+                                    <Controls.ActionButton
+                                      onClick={() => {
+                                        onViewRoomDetail(item);
+                                      }}
+                                    >
+                                      <Visibility fontSize="small" />
+                                    </Controls.ActionButton>
+                                    <Controls.ActionButton
+                                      onClick={() => {
+                                        setConfirmDialog({
+                                          isOpen: true,
+                                          title: "Are you sure to delete this record?",
+                                          subTitle: "You can't undo this operation",
+                                          onConfirm: () => {
+                                            onDelete(item.room_name);
+                                          },
+                                        });
+                                      }}
+                                    >
+                                      <CloseIcon color="error" fontSize="small" />
+                                    </Controls.ActionButton>
+                                  </TableCell>
+                                  
+                                </TableRow>
+                                  
+                              )
+                            }
+                                
+                          }
+                          // <div>{counter}</div>
+
+                        )
+                      ) 
+                  })
+                }
+                </TableBody>
+
+  
+           
+      
         </TblContainer>
         <TblPagination />
       </Paper>
       <Popup
         sx={{ height: "100px" }}
-        title="Room Form"
+        title="Create new Room"
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
@@ -211,6 +261,6 @@ export default function Room() {
         confirmDialog={confirmDialog}
         setConfirmDialog={setConfirmDialog}
       />
-    </>
+    </div>
   );
 }

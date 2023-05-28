@@ -36,7 +36,7 @@ export default function ActionButton(props) {
     return (
         <Button
             className={`${classes.root} ${classes[color]}`}
-            onClick={onClick}>
+            onClick={onClick} disableRipple>
             {children}
         </Button>
     )

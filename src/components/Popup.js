@@ -1,6 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core';
-import { Dialog, DialogTitle, DialogContent, Typography } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, Typography, IconButton } from '@mui/material';
 import Controls from "./controls/Controls";
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -20,7 +20,7 @@ export default function Popup(props) {
 
     const { title, children, openPopup, setOpenPopup } = props;
     const classes = useStyles();
-
+    console.log(children, 'this is props')
     return (
         <Dialog open={openPopup} maxWidth="md"  >
             <DialogTitle className={'classes.dialogTitle'}>
@@ -35,7 +35,7 @@ export default function Popup(props) {
                 </div>
             </DialogTitle>
             <DialogContent dividers>
-                {children}
+               {children}
             </DialogContent>
         </Dialog>
     )

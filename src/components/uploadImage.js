@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const api_key = "972192476287928";
-const cloud_name = "duexsnrij";
+const api_key = "693276158941217";
+const cloud_name = "dpszrbvez";
 const api = axios.create({
     baseURL: 'http://localhost:4000'
 });

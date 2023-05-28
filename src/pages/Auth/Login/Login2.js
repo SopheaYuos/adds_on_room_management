@@ -1,67 +1,12 @@
 import React, { useState } from 'react';
 import jwt_decode from 'jwt-decode';
 import './style.css';
-import usersApi from '../../../api/usersApi';
 import { useNavigate } from 'react-router-dom';
-import { LoadingButton } from '@mui/lab';
 import CustomizedSnackbars from '../../../components/Snackbar';
-import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Slide } from '@mui/material';
-import { isValidPassword, isValidEmail, isValidCambodiaPhone, passwordRuleMessages } from '../../../helper/validateFormatHelper';
-import { Cancel, CheckBox, Lock, Person, Visibility, VisibilityOff, VisibilityOffOutlined, VisibilityOffRounded, VisibilityOutlined } from '@mui/icons-material';
-import sendmailApi from '../../../api/sendmailApi';
+import { Slide } from '@mui/material';
+import { Lock, Person, Visibility, VisibilityOff } from '@mui/icons-material';
 import LoginApi from '../../../api/loginApi';
 export const Login2 = () => {
-    // const inputHTML = document.querySelectorAll(".input");
-
-
-    // function addcl() {
-    //     let parent = this.parentNode.parentNode;
-    //     parent.classList.add("focus");
-    // }
-
-    // function remcl() {
-    //     let parent = this.parentNode.parentNode;
-    //     if (this.value == "") {
-    //         parent.classList.remove("focus");
-    //     }
-    // }
-    // inputHTML.forEach(input => {
-    //     input.addEventListener("focus", addcl);
-    //     input.addEventListener("blur", remcl);
-    // });
-    // const navigate = useNavigate();
-    // const [inputs, setInputs] = useState({});
-    // const [loading, setLoading] = useState(false);
-    // const [snackBar, setSnackBar] = useState({ isOpen: false, message: "", type: "", Transition: Slide });
-    // const [isValid, setIsValid] = useState(true);
-    // const [validPasswordFormat, setValidPasswordFormat] = useState(passwordRuleMessages);
-    // const [validEmailFormat, setValidEmailFormat] = useState();
-    // const [validPhoneFormat, setvalidPhoneFormat] = useState();
-
-    // const handleChange = (event) => {
-    //     const name = event.target.name;
-    //     const value = event.target.value;
-    //     setIsValid(true);
-    //     setInputs(values => ({ ...values, [name]: value }));
-
-    //     if (name === 'email') {
-    //         setValidEmailFormat(isValidEmail(value));
-    //     }
-    //     else if (name === 'mobile') {
-    //         console.log(isValidCambodiaPhone(inputs.mobile), 'phone');
-    //         setvalidPhoneFormat(isValidCambodiaPhone(value));
-    //     }
-
-    // }
-    // const handleGenderChange = (event) => {
-    //     console.log(event.target.value, 'gender');
-    //     // setGender(event.target.value);
-    //     setInputs(values => ({ ...values, gender: event.target.value }))
-    // }
-    // const handleValidPassword = (event) => {
-    //     setValidPasswordFormat(isValidPassword(event.target.value));
-    //     setInputs(values => ({ ...values, password: event.target.value }))
-    // }
     const [isFocused, setIsFocused] = useState(false);
     const [isPasswordFocus, setIsPasswordFocus] = useState(false);
     function handleFocus() {
@@ -75,7 +20,6 @@ export const Login2 = () => {
     }
     function handleBlur(event) {
         setIsFocused(false);
-        console.log('Input field blurred!');
     }
 
     const navigate = useNavigate();
@@ -85,7 +29,6 @@ export const Login2 = () => {
     const [isValid, setIsValid] = useState(true);
     const [isHide, setIsHide] = useState(true);
     const handleChange = (event) => {
-        console.log(inputs, 'sdf')
         const name = event.target.name;
         const value = event.target.value;
         setIsValid(true);
@@ -135,7 +78,7 @@ export const Login2 = () => {
     }
 
     return (
-        <div>
+        <div style={{ overflow: 'scroll' }}>
             <img className="wave" src={"/assets/wave.png"} />
             <div className="container">
                 <div className="img">

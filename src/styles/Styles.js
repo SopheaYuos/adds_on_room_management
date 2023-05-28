@@ -1,7 +1,7 @@
 import { createTheme } from "@mui/material/styles"
 
 const Colors = {
-    primary: "#00796b",
+    primary: "#38d39f",
     secondary: "#6200ea",
     error: "#f44336",
     warning: "#ff9800",
@@ -26,6 +26,9 @@ const theme = createTheme({
         },
         background: {
             paper: '#EFF7FF', // your color
+        },
+        customColor: {
+            main: '#38d39f',
         },
     }
 })

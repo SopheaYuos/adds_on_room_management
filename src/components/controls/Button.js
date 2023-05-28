@@ -20,7 +20,7 @@ export default function Button(props) {
 
     return (
         <MuiButton
-            
+            disableRipple
             variant={variant || "contained"}
             size={size || "large"}
             color={color || "primary"}

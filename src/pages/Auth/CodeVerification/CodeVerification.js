@@ -12,15 +12,8 @@ export const CodeVerification = () => {
     function handleFocus() {
         setIsFocused(true);
     }
-    const handlePasswordFocus = () => {
-        setIsPasswordFocus(true);
-    }
-    const handlePasswordBlur = () => {
-        setIsPasswordFocus(false);
-    }
     function handleBlur(event) {
         setIsFocused(false);
-        console.log('Input field blurred!');
     }
 
     const navigate = useNavigate();
@@ -31,7 +24,6 @@ export const CodeVerification = () => {
     const [snackBar, setSnackBar] = useState({ isOpen: false, message: "", type: "", Transition: Slide });
     const [isValid, setIsValid] = useState(true);
     const handleChange = (event) => {
-        console.log(inputs, 'sdf')
         const name = event.target.name;
         const value = event.target.value;
         setIsValid(true);
@@ -39,7 +31,6 @@ export const CodeVerification = () => {
     }
     const handleSubmit = async (event) => {
         event.preventDefault();
-        // console.log('helo')
         if (!inputs.otp_code) {
             setIsValid(false)
             return;
@@ -53,7 +44,6 @@ export const CodeVerification = () => {
         if (queryParams.get('u')) {
 
             queryValue = JSON.parse(window.atob(queryParams.get('u')));
-            console.log(queryValue, 'tt');
 
         }
 
@@ -71,10 +61,6 @@ export const CodeVerification = () => {
             }
             window.location.href = queryValue.to_child;
 
-            // userid = decode.user_id;
-
-            // console.log(userid, 'test12323')
-
         }
         else setSnackBar({ isOpen: true, message: result.data.message, type: "warning" })
 
@@ -82,9 +68,6 @@ export const CodeVerification = () => {
 
     return (
         <div>
-            {/* <Clock timeTillDate="05 26 2019, 6:00 am" */}
-            {/* timeFormat="MM DD YYYY, h:mm a" /> */}
-            {/* <img className="wave" src={"/assets/wave.png"} /> */}
             <div className="code-verification-container">
                 <div className="img">
                     <img src={"/assets/reset_password.svg"} />

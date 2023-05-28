@@ -1,6 +1,16 @@
 
-#addbutton{
-
-    padding-left: 10rem;
-
+#room__search-header-container{
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+}
+ #room_table-header th{
+    text-align: center ;
+}
+#room_table-header .room_table_row{
+    text-align: center;
+}
+.input__component-dialog{
+    width:100% !important;
+    margin: 0 0 10px 0 !important;
 }

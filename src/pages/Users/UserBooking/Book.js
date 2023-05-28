@@ -313,7 +313,7 @@ export default function Book() {
                                     {roomsData?.map((room) =>
 
                                         <Grid key={room.id} item xs={6}>
-                                            <img src={`/assets/${room.room_name}.jpg`} width="315" height="250" style={{ objectFit: 'cover' }} ></img>
+                                            <img src={room.room_image_url} width="315" height="250" style={{ objectFit: 'cover' }} ></img>
                                             <Item sx={{ height: "auto", width: "250px", paddingTop: 1, fontSize: 20 }}><b> {room.room_name}</b><hr />
                                                 <Grid>
                                                     {/* If room is free  */}
@@ -364,7 +364,7 @@ export default function Book() {
                                         <Grid Grid item xs="auto" >
 
 
-                                            <img src={`/assets/${item.room}.jpg`} width="363" height="250" />
+                                            <img src={item.room_image_url} width="363" height="250" />
                                             <Item sx={{ height: "auto", width: "300px", fontSize: 16, paddingTop: 1, fontSize: 20 }}><b>{item.room}</b><hr />
 
 
