@@ -3,7 +3,11 @@ const formatDate = require("../../utils/formatDate");
 
 module.exports = {
     getAllRooms: async () => {
-        const sql = 'select * from rooms';
+        const sql = `SELECT r.id, r.room_name, r.room_type, r.image_url AS room_image_url,
+        s.room_name AS sub_room_name, s.image_url AS sub_room_image_url FROM 
+		rooms r LEFT JOIN sub_rooms s
+	    ON r.id = s.room_id; 
+        `;
         const result = await (await promiseCon).query(sql);
         return result[0];
     },

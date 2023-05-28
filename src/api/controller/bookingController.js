@@ -44,12 +44,12 @@ module.exports = {
         console.log(body)
         const result = await (await promiseCon).query(
             `
-            SELECT tb1.id, tb1.room_name, tb1.room_type,
+            SELECT tb1.id, tb1.room_name, tb1.room_type, tb1.image_url as room_image_url,
             CASE WHEN tb2.status IS NULL THEN true 
             ELSE false
             END AS 'is_free' 
             FROM 
-                    (SELECT r.id, r.room_name, r.room_type FROM  rooms r
+                    (SELECT r.id, r.room_name, r.room_type,  r.image_url FROM  rooms r
                     LEFT JOIN sub_rooms s
                     ON r.id = s.room_id
                     WHERE s.id IS NULL AND r.is_delete = FALSE
@@ -72,29 +72,29 @@ module.exports = {
         console.log(body)
         const result = await (await promiseCon).query(
             `
-            SELECT B.*,
-                CASE WHEN A.sub_room_id IS NULL THEN true 
+             SELECT B.*,
+                CASE WHEN A.sub_room_id IS NULL THEN true
                 ELSE false
-                END AS 'is_free' 
+                END AS 'is_free'
             FROM (
-                
+
                     SELECT b.sub_room_id, b.status FROM  booking b JOIN  sub_rooms s
                                 where
-                                    b.room_id = s.room_id AND 
-                                    b.sub_room_id = s.id AND 
+                                    b.room_id = s.room_id AND
+                                    b.sub_room_id = s.id AND
                                     b.status = "Approved" AND
                                     b.start_date >= '${body.start_date}' AND 
                                     b.end_date <= '${body.end_date}' AND 
                                     b.is_delete = FALSE)
                     AS A
-                    RIGHT  JOIN (SELECT s.id, s.room_id, r.room_name AS room, s.room_name AS sub_room, r.room_type FROM  rooms r
+                    RIGHT  JOIN (SELECT s.id, s.room_id, r.room_name AS room, s.room_name AS sub_room, r.room_type, r.image_url AS room_image_url, s.image_url AS sub_room_image_url FROM  rooms r
                                 JOIN sub_rooms s
                                     ON r.id = s.room_id
                                     WHERE r.is_delete = FALSE
                                     ) AS B
             ON A.sub_room_id = B.id
             ORDER BY B.room_id, B.sub_room;
-                    `);
+            `);
         return result[0];
     },
     updateStatus: async function updateStatus(reqBody) {

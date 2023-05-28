@@ -95,6 +95,21 @@ module.exports = function (app) {
             })
 
         })
+    app.route('/user/reset-password')
+        .post(async (req, res) => {
+            //check the email existed in db or not 
+            //true send email to users contian 6 digit code and if succes go to new page for new password
+
+            console.log(req.body)
+            const result = await User.resetNewPassword(req.body);
+            console.log(result);
+            res.status(result.status).json({
+                success: result.isSuccess,
+                message: result.message,
+                data: result?.data ?? []
+            })
+
+        })
 
 }
 

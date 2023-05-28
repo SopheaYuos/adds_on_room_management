@@ -129,7 +129,56 @@ module.exports = {
         return result;
 
 
-    }
+    },
+    resetNewPassword: async function resetNewPassword(params) {
+        const { user_id, password, confirm_password } = params;
+
+        if (!user_id || !password || !confirm_password) {
+            return {
+                status: 400,
+                message: 'Invalid request parameter',
+                isSuccess: false,
+            }
+        }
+        if (password !== confirm_password) {
+            return {
+                status: 400,
+                message: 'Password & confirm password must be the same',
+                isSuccess: false,
+            }
+        }
+
+        try {
+            const created = formatDate(new Date());
+            const encpassword = encryptPass(password);
+            const sql = `
+                     UPDATE users SET password= "${encpassword}"
+                WHERE user_id = "${user_id}"; `;
+            const result = await promiseCon.query(sql);
+            console.log(result);
+
+            if (result[0].affectedRows == 1) {
+                return {
+                    status: 200,
+                    message: 'Password has been reset',
+                    isSuccess: true,
+                }
+            } else {
+                return {
+                    status: 200,
+                    message: 'Failed to reset password',
+                    isSuccess: false,
+                }
+            }
+        } catch (err) {
+            return {
+                status: 400,
+                message: 'Somthing went wrong',
+                isSuccess: false,
+
+            }
+        }
+    },
 
 
 }
