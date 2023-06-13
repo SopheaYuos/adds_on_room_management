@@ -6,7 +6,7 @@ import BookedRoom from "./BookedRoom";
 import RequestApprove from "./RequestApprove";
 import Keys from "./keyS";
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import ImageUploader from '../../components/uploadImage'
+import ImageUploader from "../../components/uploadImage/uploadImage";
 function Dashboard() {
 
     return (

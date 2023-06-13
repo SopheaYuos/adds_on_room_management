@@ -20,7 +20,6 @@ export default function Popup(props) {
 
     const { title, children, openPopup, setOpenPopup } = props;
     const classes = useStyles();
-    console.log(children, 'this is props')
     return (
         <Dialog open={openPopup} maxWidth="md"  >
             <DialogTitle className={'classes.dialogTitle'}>
@@ -40,3 +39,4 @@ export default function Popup(props) {
         </Dialog>
     )
 }
+

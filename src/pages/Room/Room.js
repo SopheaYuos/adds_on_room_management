@@ -25,6 +25,7 @@ import "./style.css";
 import roomsApi from "../../api/roomsApi";
 import { useNavigate } from "react-router-dom";
 import { groupBy } from "lodash-es";
+import urlEncodeDecode from "../../helper/urlEncodeDecode";
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
@@ -72,14 +73,21 @@ export default function Room() {
   });
   // let groupRoom = [];
   const [groupRoom, setGroupRoom] = useState([]);
-  useEffect(() => {
+  const [groupRoomsObj, setGroupRoomObj] = useState();
+  const getAllRooms = ()=> {
     roomsApi.getAllRooms().then((res) => {
-      setGroupRoom(Object.keys(groupBy(res.data.data, 'room_name')))
-      console.log(groupRoom, 'sdf')
+      console.log(res, 'res here');
+      const temp = groupBy(res.data.data, 'room_name');
+      setGroupRoom(Object.keys(temp));
+      setGroupRoomObj(temp);
+      console.log(groupBy(res.data.data, 'room_name'), 'sdf');
 
       setRecords(res.data.data);
       console.log(res);
     });
+  }
+  useEffect(() => {
+   getAllRooms();
   }, []);
   const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } =
     useTable(records, headCells, filterFn);
@@ -116,14 +124,16 @@ export default function Room() {
     });
   };
 
-  const openInPopup = (item) => {
+  const onEdit = (item) => {
+    console.log(item, 'item')
     setRecordForEdit(item);
     setOpenPopup(true);
   };
   const onViewRoomDetail = (item) =>{
     //redirect
-    console.log(item, 'item')
-    navigate('/room/view-room-detail')
+    // console.log(id, 'item');
+
+    navigate(`/room/view-room-detail?id=${urlEncodeDecode.encodeBase64(item)}`);
     //show all rooms that includes subrooms and information
     
   }
@@ -133,13 +143,21 @@ export default function Room() {
       ...confirmDialog,
       isOpen: false,
     });
-    roomsApi.deleteRoom(id);
-    setRecords(records);
-    setNotify({
-      isOpen: true,
-      message: "Deleted Successfully",
-      type: "error",
-    });
+    try{
+      roomsApi.deleteRoom(id);
+      setNotify({
+        isOpen: true,
+        message: "Deleted Successfully",
+        type: "success",
+      });
+    }catch(err){
+      setNotify({
+        isOpen: true,
+        message: "Somthing went wrong",
+        type: "error",
+      });
+    }
+    getAllRooms();
   };
 
   return (
@@ -200,7 +218,7 @@ export default function Room() {
                                   <TableCell style={{ textAlign: 'center' }}>
                                     <Controls.ActionButton
                                       onClick={() => {
-                                        openInPopup(item);
+                                        onEdit(groupRoomsObj[item.room_name]);
                                       }}
                                       >
                                       <EditOutlinedIcon fontSize="small" />
@@ -216,10 +234,10 @@ export default function Room() {
                                       onClick={() => {
                                         setConfirmDialog({
                                           isOpen: true,
-                                          title: "Are you sure to delete this record?",
+                                          title: "Are you sure to delete this room?",
                                           subTitle: "You can't undo this operation",
                                           onConfirm: () => {
-                                            onDelete(item.room_name);
+                                            onDelete(item.id);
                                           },
                                         });
                                       }}

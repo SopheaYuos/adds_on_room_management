@@ -1,0 +1,8 @@
+.uploadimage__container .clear-icon-button{
+    position: absolute;
+    top:5px;
+    /* left:318px; */
+    right: 5px;
+    background: rgba(56, 211, 159,0.6);
+    color: #fff;
+}
