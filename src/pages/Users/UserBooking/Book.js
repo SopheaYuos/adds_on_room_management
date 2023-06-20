@@ -15,11 +15,12 @@ import dayjs from 'dayjs';
 import { DatePicker, DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LoadingButton, TimePicker } from '@mui/lab';
-
+import './userBookinStyle.css'
 
 import jwt_decode from 'jwt-decode';
 import CustomizedSnackbars from '../../../components/Snackbar';
-
+import io from 'socket.io-client';
+const socket = io.connect("http://localhost:4000");
 
 export default function Book() {
 
@@ -36,11 +37,9 @@ export default function Book() {
     const [roomObj, setRoomObj] = useState({});
     const [snackBar, setSnackBar] = useState({ isOpen: false, message: "", type: "", Transition: Slide });
     const [loading, setLoading] = useState(false)
-    const [messages, setMessages] = useState([]);
+    const [allBookedRooms, setAllBookedRooms] = useState([]);
     const handleClickOpen = (e) => {
-        console.log(e);
         setRoomObj(e);
-        console.log(roomObj, "roomojb")
         // setRoomId(e.target.id)
         setOpen(true);
     };
@@ -76,7 +75,6 @@ export default function Book() {
             const result = await bookingApi.createNewBooking(bookingObj);
             setSnackBar({ isOpen: true, message: "Booked Sucessfully", type: "success" })
             setLoading(false)
-            // console.log(result, "reuslt ")
             setOpen(false)
 
 
@@ -86,8 +84,7 @@ export default function Book() {
             setLoading(false)
 
         }
-        console.log(bookingObj, "input")
-        console.log(value, "values")
+
     }
 
     const handleClose = () => {
@@ -123,19 +120,19 @@ export default function Book() {
         }
         return "";
     }
-    useEffect(() => {
-        // socket.on("test", (res) => {
-        //     console.log(res, "socket id");
-        // });
-        const fetchData = async () => {
-            // console.log(socket, 'socketish')
-            // client-side
+    const setupSocketListener = () => {
+        socket.on('newBookingSocket', (bookingData) => {            
+            setAllBookedRooms((arr) => [...arr, bookingData]);
+        });
+    };
 
-            // socket.on('messageResponse', (data) => setMessages([...messages, data]));
+    useEffect(() => {
+        setupSocketListener();
+
+        const fetchData = async () => {
             setLoading(true)
             try {
                 let DateTimeFilter;
-                console.log(filterDate, filterTime, 'sss')
                 if (!filterTime && !filterDate) {
                     DateTimeFilter = {
                         "start_date": dayjs(new Date).format('YYYY-MM-DD') + " 08:30:00",
@@ -162,7 +159,6 @@ export default function Book() {
                     }
                 }
 
-                console.log(DateTimeFilter, 'sophea');
 
                 const [roomRes, subRoomRes] = await Promise.all([roomsApi.getFreeRoomToBook(DateTimeFilter), roomsApi.getFreeSubRoomToBook(DateTimeFilter)])
 
@@ -174,8 +170,7 @@ export default function Book() {
                 let obj = [];
                 bigRoomWithSubRoom.forEach((item, index) => {
                     subRoomRes.data.data.forEach(val => {
-                        console.log(index, "index")
-                        if (val.room_id == item) {
+                        if (val.room_id === item) {
                             obj[index] = val
                         }
                     })
@@ -190,7 +185,7 @@ export default function Book() {
                 setLoading(false)
 
 
-                setSnackBar({ isOpen: true, message: "Filter Successfully", type: "success" })
+                // setSnackBar({ isOpen: true, message: "Filter Successfully", type: "success" })
 
 
             } catch (error) {
@@ -200,16 +195,12 @@ export default function Book() {
 
         fetchData();
 
+        return () => {
+            socket.off('newBookingSocket');
+        };
     }, [filterDate, filterTime]);
 
 
-    const Item = styled(Paper)(({ theme }) => ({
-        backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-        ...theme.typography.body2,
-        padding: theme.spacing(4),
-        textAlign: 'center',
-        color: theme.palette.text.secondary,
-    }));
     const time = [
         {
             value: '08:30:00-12:30:00',
@@ -221,31 +212,117 @@ export default function Book() {
         },
     ];
 
-    //Booking handling
-    // const [checked, setChecked] = React.useState(false);
 
-    // const handleChange = (event) => {
+    const CardForBooking = React.memo((roomProps) => {
+        const { id, room_name, room_type, room_image_url, is_free } = roomProps;
 
-    //     console.log(!checked)
-    //     if (checked === true) setChecked(true)
-    //     else setChecked(true)
-    // };
+        const isRoomBooked = () => {
+            return allBookedRooms.some(
+                (booking) => booking.room_id === id
+            );
+        };
 
+        const renderButton = () => {
+            if (isRoomBooked()) {
+                return (
+                    <button className="btn disabled">Booked</button>
+                );
+            }
+
+            return (
+                <button className="btn" onClick={() => handleClickOpen(roomProps)}>
+                    Book
+                </button>
+            );
+        };
+
+        return (
+            <article key={id} className="card">
+                <div className="card__img"></div>
+                <div  className="card_link">
+                    <div
+                        className="card__img--hover"
+                        style={{ backgroundImage: `url(${room_image_url || '/assets/fall-back-image.png'})` }}
+                    ></div>
+                </div>
+                <div className="card__info">
+                    <span className="card__category">{room_type}</span>
+                    <h3 className="card__title">{room_name}</h3>
+                    {is_free ? (
+                        <div>{renderButton()}</div>
+                    ) : (
+                        <div>
+                            <button className="btn disabled" disabled={!is_free}>
+                                Booked
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </article>
+        );
+    });
+
+    const CardForSubRoomsBooking = React.memo((roomProps) => {
+        const { room_id, room, room_type, room_image_url } = roomProps;
+
+        const renderSubRoomButton = (subroom) => {
+            const isSubRoomBooked = allBookedRooms.some(
+                (booking) =>
+                    booking.room_id === subroom.room_id &&
+                    booking.sub_room_id === subroom.id
+            );
+
+            if (subroom.is_free) {
+                return (
+                    <button className={`btn ${isSubRoomBooked ? 'disabled' : ''}`} onClick={() => handleClickOpen(subroom)}>
+                        {subroom.sub_room}
+                    </button>
+                );
+            }
+
+            return (
+                <button className="btn disabled">
+                    {subroom.sub_room}
+                </button>
+            );
+        };
+
+
+        return (
+            <article key={room_id} className="card">
+                <div className="card__img"></div>
+                <div className="card_link">
+                    <div
+                        className="card__img--hover"
+                        style={{ backgroundImage: `url(${room_image_url || '/assets/fall-back-image.png'})` }}
+                    ></div>
+                </div>
+                <div className="card__info">
+                    <span className="card__category">{room_type}</span>
+                    <h3 className="card__title">{room}</h3>
+                    <div className="sub_room__content">
+                        {subRoomsData.map((subroom) =>
+                            subroom.room_id === room_id && (
+                                <React.Fragment key={subroom.id}>
+                                    {renderSubRoomButton(subroom)}
+                                </React.Fragment>
+                            )
+                        )}
+                    </div>
+                </div>
+            </article>
+        );
+    });
 
     return (
         <>
 
-            <Stack sx={{ margin: 5, paddingBottom: 5 }}>
+            <Stack sx={{ margin: 5, paddingBottom: 2 }}>
 
-                <Grid sx={{ paddingTop: 3, textAlign: 'center' }}><h2>Booking Room</h2></Grid>
+                <Grid sx={{ margin:2, paddingTop: 3, textAlign: 'center' }}><h2>Room Availabilty and Booking</h2></Grid>
                 <Grid>
-                    {/* {<Switch
-                        checked={checked}
-                        onChange={handleChange}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                    />} */}
                     <TextField
-                        sx={{ width: "200px", mr: 2, ml: 3 }}
+                        sx={{ width: "200px", mr: 2, ml: 7 }}
                         select
                         label="Filter By Time"
                         defaultValue={time[0].value}
@@ -269,26 +346,14 @@ export default function Book() {
                         />
 
                     </LocalizationProvider>
-
-                    {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DesktopDatePicker
-                            label="Date desktop"
-                            inputFormat="MM/DD/YYYY"
-                            value={value}
-                            onChange={handleChange}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </LocalizationProvider> */}
-
-
-                    <Grid
+                            <Grid
                         container
                         direction="row"
                         justifyContent="flex-end"
                         alignItems="flex-end"
                         spacing={5}
                     >
-                        <Stack direction={'row'} spacing={2} sx={{ mr: 6 }}>
+                        <Stack direction={'row'} spacing={2} sx={{ mr: 7 }}>
                             <Chip label="Available" color="primary" />
 
                             <Chip label="Booked" sx={{ color: "#000" }} />
@@ -297,114 +362,47 @@ export default function Book() {
                 </Grid>
             </Stack>
 
-            <Stack spacing={1} sx={{ width: "92%", padding: 8, marginTop: "-100px" }}  >
-                <Card elevation={2} sx={{ height: "auto", width: "100%" }} >
-                    <Grid sx={{ margin: 0 }}><Item elevation={0} sx={{ padding: 2.5, width: 120, background: "#0d47a1", color: "white", fontSize: 20, borderRadius: "10px 0 10px 0" }}><b>Rooms</b></Item></Grid>
-                    {
-                        loading === true
-                            ?
-                            <Box height={300} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <CircularProgress />
-                            </Box>
-                            :
-                            <Stack alignItems={"center"} direction={"row"} sx={{ padding: 3, paddingLeft: 25 }}>
-                                <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+            <article className='card__container-main'>
+                <div className='top-left__indicator'>Rooms</div>
+                {
+                    loading === true
+                        ?
+                        <Box height={300} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <CircularProgress />
+                        </Box>
+                        :
+                        <section className='cards'>
+                            {roomsData?.map((room) =>
+                                // CardForBooking(room)
+                                <CardForBooking key={ room.id } {...room } />
+                            )}
+                        </section>
+                }
+            </article>
+            <div>
+                yy
+                {allBookedRooms.map((item)=>
+                <div>{item.room_id}</div>
+            )}
+            </div>
+            <article className='card__container-main' id="sub-room__container">
+                <div className='top-left__indicator'>SubRooms</div>
+                {
+                    loading === true
+                        ?
+                        <Box height={300} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <CircularProgress />
+                        </Box>
+                        :
+                        <section className='cards'>
+                            {bigRoomHasSubRoom?.map((item) =>
+                             <CardForSubRoomsBooking {...item} />
+                            )}
 
-                                    {roomsData?.map((room) =>
+                        </section>
+                }
+            </article>
 
-                                        <Grid key={room.id} item xs={6}>
-                                            <img src={room.room_image_url} width="315" height="250" style={{ objectFit: 'cover' }} ></img>
-                                            <Item sx={{ height: "auto", width: "250px", paddingTop: 1, fontSize: 20 }}><b> {room.room_name}</b><hr />
-                                                <Grid>
-                                                    {/* If room is free  */}
-                                                    {room.is_free === 1 ?
-                                                        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 1, color: '#fff' }} justifyContent="center">
-                                                            <Grid item xs={6}>
-                                                                <Button id={room.id} onClick={() => handleClickOpen(room)} label="Book" variant="contained">Book</Button>
-                                                            </Grid>
-                                                        </Grid>
-                                                        :
-                                                        /* if not */
-                                                        <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 1, color: '#fff' }} justifyContent="center">
-                                                            <Grid item xs={6}>
-                                                                <Button disabled label="Book" variant="contained" color="error">Book</Button>
-                                                            </Grid>
-                                                        </Grid>
-                                                    }
-                                                </Grid>
-                                            </Item>
-                                        </Grid>
-                                    )}
-                                </Grid>
-                            </Stack>
-                    }
-                </Card>
-                <Card elevation={4} sx={{ height: "auto", borderRadius: "10px" }}>
-                    <Grid justifyContent="center"
-                        alignItems="center"
-                        sx={{ margin: 0 }}>
-                        <Item sx={{ padding: 2.5, width: 120, background: "#FF365F", color: "white", fontSize: 20, borderRadius: "10px 0 10px 0" }}>
-                            <b>Subrooms</b>
-                        </Item>
-                    </Grid>
-                    {
-                        loading === true
-                            ?
-                            <Box height={300} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <CircularProgress />
-                            </Box>
-                            :
-                            <Grid container spacing={7}
-                                sx={{ padding: 2 }}>
-
-
-
-                                {
-                                    bigRoomHasSubRoom?.map(item =>
-                                        <Grid Grid item xs="auto" >
-
-
-                                            <img src={item.room_image_url} width="363" height="250" />
-                                            <Item sx={{ height: "auto", width: "300px", fontSize: 16, paddingTop: 1, fontSize: 20 }}><b>{item.room}</b><hr />
-
-
-                                                <Grid>
-
-                                                    <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 1, backgroundColor: "blue", color: '#fff' }}>
-                                                        {subRoomsData.map(subroom =>
-                                                            <Grid item xs={2.3}>
-                                                                {subroom.room_id === item.room_id &&
-                                                                    <>
-                                                                        {subroom.is_free === 1 &&
-                                                                            <Button onClick={() => handleClickOpen(subroom)} sx={{ borderRadius: 10 }} >
-                                                                                <Avatar id={subroom.id} sx={{ height: "40px", width: "50px", fontSize: 16, backgroundColor: "#1565c0" }}>
-                                                                                    {subroom.sub_room}
-                                                                                </Avatar>
-                                                                            </Button>
-                                                                        }
-                                                                        {subroom.is_free === 0 &&
-                                                                            <Button disabled>
-                                                                                <Avatar sx={{ height: "40px", width: "50px", fontSize: 16 }}>
-                                                                                    {subroom.sub_room}
-                                                                                </Avatar>
-                                                                            </Button>
-                                                                        }
-                                                                    </>
-                                                                }
-                                                            </Grid>
-
-                                                        )}
-                                                    </Grid>
-                                                </Grid>
-
-                                            </Item>
-
-                                        </Grid >
-                                    )}
-                            </Grid >
-                    }
-                </Card >
-            </Stack >
             <Stack >
                 <CustomizedSnackbars snackBar={snackBar} setSnackBar={setSnackBar} />
                 <Dialog

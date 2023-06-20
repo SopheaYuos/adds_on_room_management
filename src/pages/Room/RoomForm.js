@@ -19,7 +19,7 @@ const initialFValues = {
 };
 
 export default function RoomForm(props) {
-  const { addOrEdit, recordForEdit } = props;
+  const { addOrEdit, recordForEdit} = props;
   const [isFocused, setIsFocused] = useState({});
   const [inputs, setInputs] = useState({});
   const [validInput, setValidInput] = useState(true);
@@ -28,7 +28,6 @@ export default function RoomForm(props) {
   const [returnedData, setReturnedData] = useState(null);
   const [choosedImageFileChanged, setChoosedImageFileChanged] = useState(false);
   const [removedSubRoomIndex, setRemovedSubRoomIndex] = useState([]);
-
   const validate = (fieldValues = values) => {
     let temp = { ...errors };
     if ("roomNo" in fieldValues)
@@ -57,19 +56,19 @@ export default function RoomForm(props) {
       return;
     };
 
-    // const data = await uploadImageHelper(e);
-    // console.log(data, 'daa from hleper')
     console.log(inputs, 'd');
     // fomat object 
     const req = {
       room_name: inputs.room_name,
       room_type: inputs.room_type,
       has_sub_room: hasSubRoom,
-      image_url: returnedData.secure_url,
-      sub_room_name: inputValues
+      image_url: returnedData?.secure_url ? returnedData.secure_url : recordForEdit[0].room_image_url,
+      sub_room_name: inputValues,
+      room_id: recordForEdit[0].id
     }
-    const result = await roomsApi.createNewRoom(req);
-    
+    const result = await (recordForEdit ? roomsApi.updateRoomV2(req) :  roomsApi.createNewRoom(req));
+    // console.log(props.onFormSubmitSuccess(true), 'hello sophea')
+    props.onFormSubmitSuccess(result.data.success || false);
   };
   useEffect(() => {
     if (recordForEdit != null){

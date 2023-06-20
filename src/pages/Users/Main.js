@@ -158,7 +158,7 @@ export default function User() {
     );
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ flexGrow: 1 }} className='user__page-container'>
             <AppBar sx={{ backgroundColor: '#1565c0' }} position="fixed">
                 <Toolbar>
 
@@ -172,8 +172,9 @@ export default function User() {
                     </Typography>
 
                     <Box sx={{ flexGrow: 1 }} />
-                    <Box sx={{ display: { xs: 'none', md: 'flex' }, }}>
+                    <Box sx={{ display: { xs: 'none', md: 'flex' }, }} className='user__page-box'>
                         <Button
+                            className='user__page-nav-bar-button'
                             style={({ isActive }) => ({
                                 color: isActive ? '#fff' : 'rgba(255,255,255,0.5)',
                             })}
@@ -182,7 +183,8 @@ export default function User() {
 
                             Book
                         </Button>
-                        <Button style={({ isActive }) => ({
+                        
+                        <Button className='user__page-nav-bar-button' style={({ isActive }) => ({
                             color: isActive ? '#fff' : 'rgba(255,255,255,0.5)',
                         })}
                             component={NavLink} to={`${'/user/booked_room'}`} aria-label="show 4 new mails" color="inherit">

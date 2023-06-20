@@ -29,6 +29,9 @@ export default {
     async updateRoom(data) {
         return await axios.put(URL + `/room`, data);
     },
+    async updateRoomV2(data) {
+        return await axios.put(URL + `/v2/room/update`, data);
+    },
     async deleteRoom(id) {
         return await axios.delete(URL + `/room/${id}`);
     },

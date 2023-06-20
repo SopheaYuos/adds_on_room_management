@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(3),
     },
     searchInput: {
-        width: "75%",
+        width: "70%",
     },
     newButton: {
         position: "absolute",
@@ -106,30 +106,26 @@ export default function Student() {
 
 
     const onDelete = (id) => {
+        console.log(id, 'id')
         setConfirmDialog({
             ...confirmDialog,
             isOpen: false,
         });
-        // usersApi.deleteUser(id);
-        setRecords(bookingApi.getAllBookingOneUser("e20181297"));
+        bookingApi.deleteBooking(id);
+        setRecords(bookingApi.getAllBookingOneUser(user_id));
         setNotify({
             isOpen: true,
             message: "Deleted Successfully",
-            type: "error",
+            type: "success",
         });
     };
-    const d = [{
-        name: 'sophea'
-    }]
     return (
         <>
 
-            {/* <ExportExcel /> */}
             <Paper className={classes.pageContent}>
-                <ExcelExporter />
                 <Toolbar>
                     <Controls.Input
-                        label="Search Students"
+                        label="Search Topic"
                         className={classes.searchInput}
                         InputProps={{
                             startAdornment: (
@@ -163,20 +159,20 @@ export default function Student() {
                                     {item.status === "Pending" && <Chip color='warning' label="Pending" />}
                                 </TableCell>
                                 <TableCell>
-                                    <Controls.ActionButton
+                                   {item.status === 'Pending' && <Controls.ActionButton
                                         onClick={() => {
                                             setConfirmDialog({
                                                 isOpen: true,
                                                 title: "Are you sure to delete this record?",
                                                 subTitle: "You can't undo this operation",
                                                 onConfirm: () => {
-                                                    onDelete(item.user_id);
+                                                    onDelete(item.id);
                                                 },
                                             });
                                         }}
                                     >
                                         <CloseIcon color="error" fontSize="small" />
-                                    </Controls.ActionButton>
+                                    </Controls.ActionButton>}
                                 </TableCell>
                             </TableRow>
 

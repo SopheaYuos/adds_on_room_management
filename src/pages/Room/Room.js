@@ -159,6 +159,24 @@ export default function Room() {
     }
     getAllRooms();
   };
+  const hanldeFormSubmitSuccess = (isSuccess)=>{
+    if (isSuccess) {
+      setOpenPopup(false);
+      getAllRooms();
+      setNotify({
+        isOpen: true,
+        message: "Success",
+        type: "success",
+      });
+    }else{
+      setOpenPopup(true);
+      setNotify({
+        isOpen: true,
+        message: "Failed",
+        type: "error",
+      });
+    }
+  }
 
   return (
     
@@ -272,7 +290,7 @@ export default function Room() {
         openPopup={openPopup}
         setOpenPopup={setOpenPopup}
       >
-        <EmployeeForm recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
+        <EmployeeForm onFormSubmitSuccess={hanldeFormSubmitSuccess}  recordForEdit={recordForEdit} addOrEdit={addOrEdit} />
       </Popup>
       <Notification notify={notify} setNotify={setNotify} />
       <ConfirmDialog

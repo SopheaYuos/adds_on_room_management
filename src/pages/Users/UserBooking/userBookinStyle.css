@@ -1,0 +1,138 @@
+.cards {
+    width: 100%;
+    display: grid;
+    place-items: center;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, minmax(calc(100% / 5), 1fr));
+    max-width: 1100px;
+    gap: 32px;
+    margin:0 auto;
+}
+
+/* .card--1 .card__img, .card--1 .card__img--hover {
+    background-image: url('https://cdn.pixabay.com/photo/2015/01/07/11/31/tigers-591359__340.jpg');
+} */
+.card__img {
+    visibility: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 235px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  
+}
+
+.card__img--hover {
+    transition: 0.2s all ease-out;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 100%;
+    position: absolute;
+    height: 235px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    top: 0;
+  
+}
+.card {
+  /* margin: 25px; */
+  transition: all .4s cubic-bezier(0.175, 0.885, 0, 1);
+  background-color: #fff;
+    width: 100%;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.card:hover {
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    transform: scale(1.10, 1.10);
+}
+
+.card__info {
+z-index: 2;
+  background-color: #fff;
+  border-bottom-left-radius: 12px;
+border-bottom-right-radius: 12px;
+   padding: 16px 24px 24px 24px;
+}
+
+.card__category {
+    font-family: sans-serif;
+    text-transform: uppercase;
+    font-size: 13px;
+    letter-spacing: 2px;
+    font-weight: 500;
+  color: #868686;
+}
+
+.card__title {
+    margin-top: 5px;
+    margin-bottom: 10px;
+   font-family: sans-serif;
+}
+/* .card:hover .card__img--hover {
+    height: 100%;
+    opacity: 0.3;
+} */
+.card__container-main{
+    width: 85%;
+    margin: 0 auto;
+    position: relative;
+    padding: 70px 40px 40px;
+    box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 0px 6px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 12px;
+    margin-top: 20px;
+}
+.card__container-main .top-left__indicator{
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: #32be8f;
+    color: #fff;
+    padding: 16px;
+    border-radius: 12px 0 12px 0;
+    width: 120px;
+    text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+
+}
+.card__info .btn{
+    margin: 0;
+    border-radius: 12px;
+}
+.card__info .disabled{
+    background: rgba(0, 0, 0, 0.08) !important;
+    cursor: auto;
+}
+   
+.card__info .subroom__card-button{
+    background-color: #38d39f;
+    color: #fff;
+    font-weight: 600;
+    margin-right: 10px;
+    height: 40px;
+    width: 70px;
+    border-radius: 24px;
+    padding: 10px 8px;
+    text-align: center;
+    border: 0;
+    /* cursor: pointer; */
+}
+.card__info .sub_room__content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.sub_room__content  > *:not(:last-child) {
+  /* Styles for all child elements except the last one */
+    margin-right: 10px;
+    border-radius: 8px;
+}
+#sub-room__container{
+    margin-bottom: 40px;
+}
