@@ -6,7 +6,9 @@ module.exports = {
         const sql = `SELECT r.id, r.room_name, r.room_type, r.image_url AS room_image_url,
         s.room_name AS sub_room_name, s.image_url AS sub_room_image_url FROM 
 		rooms r LEFT JOIN sub_rooms s
-	    ON r.id = s.room_id; 
+	    ON r.id = s.room_id
+        WHERE r.is_delete = 0
+        ORDER BY r.room_name;
         `;
         const result = await (await promiseCon).query(sql);
         return result[0];
@@ -27,7 +29,7 @@ module.exports = {
         const result = await (await promiseCon).query(sql);
         return result[0];
     },
-    createSubroom: async function insertNew(reqBody) {
+    createSubroom: async function(reqBody) {
         const created = formatDate(new Date()); //generate current date
         const sql = `
             INSERT INTO sub_rooms(room_id, room_name,created, modified)
@@ -36,17 +38,62 @@ module.exports = {
         return result;
     },
     createRoom: async function insertNew(reqBody) {
-        const created = formatDate(new Date()); //generate current date
+        const created = formatDate(new Date()); //generate current date;
+        const {room_name, room_type, image_url = null, has_sub_room = false, sub_room_name} = reqBody;
 
         const sql = `
-            INSERT INTO rooms(room_name,room_type,created, modified)
-                        values("${reqBody.room_name}", "${reqBody.room_type}", "${created}","${created}")`;
-        const result = await (await promiseCon).query(sql);
+                        INSERT INTO rooms(room_name,room_type, image_url, created, modified)
+                        values(?, ?, ?, ?,?)`;
+        const values = [room_name, room_type, image_url, created,created];
+        
+        const result = await (await promiseCon).query(sql, values);
+        if (has_sub_room) {
+            await Promise.all(sub_room_name.map(async (subroom) => {
+                const obj = {
+                    room_id: result[0].insertId,
+                    room_name: subroom
+                };
+                await module.exports.createSubroom(obj);
+            })); 
+        }
         return result;
+    },
+    updateRoomV2: async function updateRoomV2(reqBody){
+    const updated = formatDate(new Date()); // generate current date;
+    const { room_id, room_name, room_type, image_url = null, has_sub_room = false, sub_room_name } = reqBody;
+
+    const sql = `
+    UPDATE rooms
+    SET room_name = ?, room_type = ?, image_url = ?, modified = ?
+        WHERE id = ? `;
+    const values = [room_name, room_type, image_url, updated, room_id];
+
+    const result = await (await promiseCon).query(sql, values);
+
+    if (has_sub_room) {
+        // Delete existing subrooms related to the room
+        const deleteSql = `
+            DELETE FROM sub_rooms
+            WHERE room_id = ? `;
+        const deleteValues = [room_id];
+
+        await (await promiseCon).query(deleteSql, deleteValues);
+
+        // Create new subrooms
+        await Promise.all(sub_room_name.map(async (subroom) => {
+            const obj = {
+                room_id,
+                room_name: subroom
+            };
+            await module.exports.createSubroom(obj);
+        }));
+    }
+
+return result;
     },
     updateRoom: async function updateRoom(reqBody) {
         const created = formatDate(new Date()); //generate current date
-        console.log(reqBody.start_date)
+        // console.log(reqBody.start_date)
         const sql = `
             UPDATE  rooms SET
                             room_name= "${reqBody.room_name}",
@@ -59,7 +106,7 @@ module.exports = {
     },
     updateSubroom: async function updateSubroom(reqBody) {
         const created = formatDate(new Date()); //generate current date
-        console.log(reqBody.start_date)
+        // console.log(reqBody.start_date)
         const sql = `
             UPDATE  sub_rooms SET
                             room_name= "${reqBody.room_name}",
@@ -70,7 +117,7 @@ module.exports = {
     },
     updateRoom: async function updateRoom(reqBody) {
         const created = formatDate(new Date()); //generate current date
-        console.log(reqBody.start_date)
+        // console.log(reqBody.start_date)
         const sql = `
             UPDATE  rooms SET
                             room_name= "${reqBody.room_name}",

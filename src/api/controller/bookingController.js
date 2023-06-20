@@ -1,15 +1,20 @@
 const promiseCon = require("../../config/promiseCon");
 const formatDate = require("../../utils/formatDate");
 
-
 module.exports = {
-    addNewBooking: async function insertNew(reqBody) {
+    addNewBooking: async function insertNew(reqBody, io) {
         const created = formatDate(new Date()) //generate current date
         const sql = `
         INSERT INTO booking(start_date, end_date, room_id, sub_room_id, number_of_people,event_type,responsibler, status, description, created, modified)
                     values("${reqBody.start_date}", "${reqBody.end_date}", ${reqBody.room_id}, ${reqBody.sub_room_id}, ${reqBody.number_of_people}, "${reqBody.event_type}", "${reqBody.responsibler}", "${reqBody.status}"," ${reqBody.description}", "${created}", "${created}")`;
         console.log(sql, "sql")
         const result = await (await promiseCon).query(sql);
+        const obj = {
+            room_id: reqBody.room_id,
+            sub_room_id: reqBody.sub_room_id
+        }
+        io.emit('newBookingSocket', obj);
+        console.log('\n______here we go ')
         return result;
     },
     updateBooking: async function updateBooking(reqBody) {
@@ -61,7 +66,7 @@ module.exports = {
                         r.id = b.room_id AND 
                         b.start_date ='${body.start_date}' AND 
                         b.end_date ='${body.end_date}' AND 
-                        b.status = "Approved" AND
+                        (b.status = "Approved" or b.status = "Pending")  AND
                         b.is_delete = FALSE) 
                         as tb2
                     ON  tb1.id = tb2.room_id;
@@ -82,7 +87,7 @@ module.exports = {
                                 where
                                     b.room_id = s.room_id AND
                                     b.sub_room_id = s.id AND
-                                    b.status = "Approved" AND
+                                   (b.status = "Approved" or b.status = "Pending") AND
                                     b.start_date >= '${body.start_date}' AND 
                                     b.end_date <= '${body.end_date}' AND 
                                     b.is_delete = FALSE)

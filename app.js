@@ -72,13 +72,14 @@ app.get("/view/photos", async (req, res) => {
 const http = require('http');
 const httpServer = http.createServer(app)
 
-const server = new socketio.Server(httpServer, {
+const io = new socketio.Server(httpServer, {
     cors: {
         origin: "http://localhost:3000",
     }
 })
 
-server.on("connection", (socket) => {
+io.on("connection", (socket) => {
+    // console.log(socket, 'thisis socket')
     console.log(`User Connected: ${socket.id}`);
 
     socket.on("join_room", (data) => {
@@ -87,24 +88,26 @@ server.on("connection", (socket) => {
 
     socket.on("send_message", (data) => {
         // socket.to(data.room).emit("receive_message", data);
-        socket.emit("receive_message", data)
+        io.emit("receive_message", data);
+        console.log(data, 'data')
     });
 
 });
 httpServer.listen(PORT)
 
 // app.get('/', (req, res) => {
-//     res.status(200).send('Hello from server');
+//     res.status(200).send('Hello from io');
 
 // })
 
 //call to routes
-require('./src/api/routes/bookingRoutes')(app);
+require('./src/api/routes/bookingRoutes')(app, io);
 require('./src/api/routes/roomRoutes')(app);
 require('./src/api/routes/userRoutes')(app);
 require('./src/api/routes/sendMailRoutes')(app);
 require('./src/auth/loginService')(app);
 require('./src/api/routes/otpRoutes')(app)
+require('./src/api/routes/roomEquipmentRoutes')(app);
 
 
 // console.log('All routes: ')

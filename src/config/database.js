@@ -4,6 +4,8 @@ const { bookingSchema } = require('../model/bookingSchema');
 const { roomSchema } = require('../model/roomSchema');
 const { subRoomSchema } = require('../model/subRoomSchema');
 const { userSchema } = require('../model/userSchema');
+const { equipmentSchema } = require('../model/equimentSchema');
+const { roomHasEquipmentSchema } = require('../model/roomHasEquipment');
 
 
 const con = mysql.createConnection({
@@ -33,8 +35,18 @@ con.connect(function (err) {
         console.log("sub_room created");
     })
     con.query(bookingSchema, function (err) {
-        if (err) return console.log('bookingSchema database exists or error \n_________________________________');
-        console.log("bookingSchema created \n_________________________________");
+        if (err) return console.log('bookingSchema database exists or error');
+        console.log("bookingSchema created");
+
+    })
+    con.query(equipmentSchema, function (err) {
+        if (err) return console.log('equimentSchema database exists or error');
+        console.log("equimentSchema created ");
+
+    })
+    con.query(roomHasEquipmentSchema, function (err) {
+        if (err) return console.log('roomHasEquipmentSchema database exists or error\n_________________________________');
+        console.log("roomHasEquipmentSchema created\n_________________________________");
 
     })
 });

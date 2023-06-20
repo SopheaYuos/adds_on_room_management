@@ -1,11 +1,11 @@
-const { getAllRooms, getRoomById, getAllsubrooms, getSubroomById, createSubroom, createRoom, updateSubroom, updateRoom, deleteSubroomById, deleteRoomById } = require("../controller/roomController")
+const { getAllRooms, getRoomById, getAllsubrooms, getSubroomById, createSubroom, createRoom, updateSubroom, updateRoom, deleteSubroomById, deleteRoomById, updateRoomV2 } = require("../controller/roomController")
 
 
 module.exports = function (app) {
     app.route('/room')
         .get(async (req, res) => {
             const result = await getAllRooms();
-            console.log(result);
+            // console.log(result);
             res.status(200).json({
                 success: true,
                 data: result
@@ -40,6 +40,22 @@ module.exports = function (app) {
                 });
             }
         })
+    app.route('/v2/room/update')
+        .put(async (req, res) => {
+            const result = await updateRoomV2(req.body);
+            if (result[0].affectedRows == 1) {
+                res.status(200).json({
+                    success: true,
+                    message: 'Updated sucessfully'
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: 'Fail to create'
+                });
+            }
+        })
+    
     app.route('/room/:id')
         .get(async (req, res) => {
             const result = await getRoomById(req.params.id);
@@ -69,7 +85,7 @@ module.exports = function (app) {
     app.route('/subrooms')
         .get(async (req, res) => {
             const result = await getAllsubrooms();
-            console.log(result);
+            // console.log(result);
             res.status(200).json({
                 success: true,
                 data: result

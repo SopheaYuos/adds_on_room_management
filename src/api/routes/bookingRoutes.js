@@ -4,7 +4,7 @@ var app = express()
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
-module.exports = function (app, id) {
+module.exports = function (app, io) {
     app.route('/book')
         .get(async (req, res) => {
             const result = await getAllBooking();
@@ -15,7 +15,7 @@ module.exports = function (app, id) {
         })
 
         .post(async (req, res) => {
-            const result = await addNewBooking(req.body);
+            const result = await addNewBooking(req.body, io);
             console.log(result, 'heeresss')
             if (result[0].affectedRows == 1) {
                 res.status(200).json({
