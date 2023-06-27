@@ -292,12 +292,17 @@ export default function Book() {
             // console.log(x, 'xnxnxxx')
 
             const isSubRoomBooked = allBookedRooms.some(
-                (booking) =>
-                
-                    booking.room_id === subroom.room_id &&
-                    booking.sub_room_id === subroom.id &&
-                    format(parseISO(booking.start_date), "yyyy-MM-dd HH:mm:ss") === selectedDateRange.start_date &&
-                    format(parseISO(booking.end_date), "yyyy-MM-dd HH:mm:ss") === selectedDateRange.end_date
+                (booking) =>{
+                    if (booking.approval_status === "Approved"){
+                        return (
+                            booking.room_id === subroom.room_id &&
+                            booking.sub_room_id === subroom.id &&
+                            format(parseISO(booking.start_date), "yyyy-MM-dd HH:mm:ss") === selectedDateRange.start_date &&
+                            format(parseISO(booking.end_date), "yyyy-MM-dd HH:mm:ss") === selectedDateRange.end_date
+
+                    )}
+                    return false;
+                    } 
             );
 
             if (subroom.is_free) {
