@@ -7,7 +7,7 @@ import Box from '@mui/material/Box';
 import AllBooking from './AllBooking';
 import Approved from './Approved';
 import Rejected from './Rejected ';
-import PendingAndApproveal from './PendingAndApproveal';
+import Pending from './Pending';
 import PageHeader from '../../components/PageHeader';
 import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 
@@ -69,7 +69,7 @@ export default function BasicTabs() {
       </Box>
       <TabPanel value={value} index={0}>
         
-       <PendingAndApproveal></PendingAndApproveal>
+       <Pending></Pending>
       </TabPanel>
     
       <TabPanel value={value} index={1}>

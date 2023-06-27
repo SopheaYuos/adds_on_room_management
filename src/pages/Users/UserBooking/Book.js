@@ -20,8 +20,12 @@ import './userBookinStyle.css'
 import jwt_decode from 'jwt-decode';
 import CustomizedSnackbars from '../../../components/Snackbar';
 import io from 'socket.io-client';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import { format, formatISO, parse, parseISO } from 'date-fns';
+dayjs.extend(utc);;
+dayjs.extend(timezone);
 const socket = io.connect("http://localhost:4000");
-
 export default function Book() {
 
     const [open, setOpen] = React.useState(false);
@@ -31,7 +35,7 @@ export default function Book() {
     const [filterTime, setFilterTime] = useState();
     const [filterDate, setFilterDate] = useState();
     const [value, setValue] = React.useState();
-    const [startDate, setStartDate] = useState({ start_date: "", end_date: "" });
+    const [selectedDateRange, setSelectedDateRange] = useState({ start_date: "", end_date: "" });
     const [input, setInput] = useState({});
     const [userId, setUserId] = useState();
     const [roomObj, setRoomObj] = useState({});
@@ -52,8 +56,8 @@ export default function Book() {
             bookingObj = {
                 ...input,
                 status: "Pending",
-                start_date: startDate.start_date,
-                end_date: startDate.end_date,
+                start_date: selectedDateRange.start_date,
+                end_date: selectedDateRange.end_date,
                 room_id: roomObj.room_id,
                 sub_room_id: roomObj.id,
                 responsibler: userId,
@@ -62,8 +66,8 @@ export default function Book() {
             bookingObj = {
                 ...input,
                 status: "Pending",
-                start_date: startDate.start_date,
-                end_date: startDate.end_date,
+                start_date: selectedDateRange.start_date,
+                end_date: selectedDateRange.end_date,
                 room_id: roomObj.id,
                 sub_room_id: null,
                 responsibler: userId,
@@ -72,8 +76,11 @@ export default function Book() {
 
         try {
 
-            const result = await bookingApi.createNewBooking(bookingObj);
-            setSnackBar({ isOpen: true, message: "Booked Sucessfully", type: "success" })
+            const { success, message } = (await bookingApi.createNewBooking(bookingObj)).data;
+            if (success) setSnackBar({ isOpen: true, message, type: "success" })
+            else{
+                setSnackBar({ isOpen: true, message, type: "warning" })
+            }
             setLoading(false)
             setOpen(false)
 
@@ -121,8 +128,14 @@ export default function Book() {
         return "";
     }
     const setupSocketListener = () => {
-        socket.on('newBookingSocket', (bookingData) => {            
+        socket.on('bookingApprovalSocket', (bookingData) => {            
             setAllBookedRooms((arr) => [...arr, bookingData]);
+            console.log(bookingData, 'gooooooos');
+           
+            // dayjs('2021-06-08T24:00:00').utc('z').local().tz('America/Detroit').format('ddd, MMM D, H:mm z')
+            // console.log("start_date", dayjs(allBookedRooms.start_date,).utc(true).tz('Asia/Phnom_Penh').format('YYYY-MM-DD hh:mm A'))
+
+            // console.log(filterTime, filterDate, 'd')
         });
     };
 
@@ -130,7 +143,8 @@ export default function Book() {
         setupSocketListener();
 
         const fetchData = async () => {
-            setLoading(true)
+            setLoading(true);
+            setAllBookedRooms([]);
             try {
                 let DateTimeFilter;
                 if (!filterTime && !filterDate) {
@@ -158,8 +172,7 @@ export default function Book() {
                         "end_date": dayjs(filterDate).format('YYYY-MM-DD') + " " + filterTime.substring(9, 17)
                     }
                 }
-
-
+           
                 const [roomRes, subRoomRes] = await Promise.all([roomsApi.getFreeRoomToBook(DateTimeFilter), roomsApi.getFreeSubRoomToBook(DateTimeFilter)])
 
 
@@ -180,7 +193,7 @@ export default function Book() {
                 setRoomData(roomRes.data.data);
                 setBigRoomHasSubRoom(obj);
                 setSubRoomData(subRoomRes.data.data);
-                setStartDate(DateTimeFilter);
+                setSelectedDateRange(DateTimeFilter);
                 setUserId(jwt_decode(getCookie("token")).user_id);
                 setLoading(false)
 
@@ -196,7 +209,7 @@ export default function Book() {
         fetchData();
 
         return () => {
-            socket.off('newBookingSocket');
+            socket.off('bookingApprovalSocket');
         };
     }, [filterDate, filterTime]);
 
@@ -217,9 +230,18 @@ export default function Book() {
         const { id, room_name, room_type, room_image_url, is_free } = roomProps;
 
         const isRoomBooked = () => {
-            return allBookedRooms.some(
-                (booking) => booking.room_id === id
-            );
+            
+            return allBookedRooms.some((booking) => {
+                if (booking.approval_status === "Approved") {
+                    return (
+                        booking.room_id === id &&
+                        format(parseISO(booking.start_date), "yyyy-MM-dd HH:mm:ss") === selectedDateRange.start_date &&
+                        format(parseISO(booking.end_date), "yyyy-MM-dd HH:mm:ss") === selectedDateRange.end_date
+                    );
+                }
+                return false;
+            });
+
         };
 
         const renderButton = () => {
@@ -264,12 +286,18 @@ export default function Book() {
 
     const CardForSubRoomsBooking = React.memo((roomProps) => {
         const { room_id, room, room_type, room_image_url } = roomProps;
-
+       
         const renderSubRoomButton = (subroom) => {
+            // const x = format(allBookedRooms[0].start_date, 'dd MMMM yyyy hh:mm:a');
+            // console.log(x, 'xnxnxxx')
+
             const isSubRoomBooked = allBookedRooms.some(
                 (booking) =>
+                
                     booking.room_id === subroom.room_id &&
-                    booking.sub_room_id === subroom.id
+                    booking.sub_room_id === subroom.id &&
+                    format(parseISO(booking.start_date), "yyyy-MM-dd HH:mm:ss") === selectedDateRange.start_date &&
+                    format(parseISO(booking.end_date), "yyyy-MM-dd HH:mm:ss") === selectedDateRange.end_date
             );
 
             if (subroom.is_free) {
@@ -379,12 +407,6 @@ export default function Book() {
                         </section>
                 }
             </article>
-            <div>
-                yy
-                {allBookedRooms.map((item)=>
-                <div>{item.room_id}</div>
-            )}
-            </div>
             <article className='card__container-main' id="sub-room__container">
                 <div className='top-left__indicator'>SubRooms</div>
                 {
@@ -420,10 +442,10 @@ export default function Book() {
                                 </Grid>
 
                                 <Grid>
-                                    <TextField name="start_date" value={startDate.start_date} sx={{ width: "400px", margin: 1 }} id="outlined-basic" label="Start Date" variant="outlined" InputLabelProps={{ shrink: true, readonly: true }} />
+                                    <TextField name="start_date" value={selectedDateRange.start_date} sx={{ width: "400px", margin: 1 }} id="outlined-basic" label="Start Date" variant="outlined" InputLabelProps={{ shrink: true, readonly: true }} />
                                 </Grid>
                                 <Grid>
-                                    <TextField name="end_date" value={startDate.end_date} sx={{ width: "400px", margin: 1 }} id="outlined-basic" label="End Date" variant="outlined" InputLabelProps={{ shrink: true, readonly: true }} />
+                                    <TextField name="end_date" value={selectedDateRange.end_date} sx={{ width: "400px", margin: 1 }} id="outlined-basic" label="End Date" variant="outlined" InputLabelProps={{ shrink: true, readonly: true }} />
                                 </Grid>
 
                                 <Grid >

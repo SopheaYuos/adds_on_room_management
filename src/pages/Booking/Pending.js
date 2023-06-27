@@ -6,14 +6,13 @@ import { makeStyles } from '@material-ui/core';
 import bookingApi from "../../api/bookingApi";
 import Controls from "../../components/controls/Controls";
 import moment from "moment";
-// import CloseIcon from '@material-ui/icons/Close';
-// import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import dayjs from 'dayjs';
-
+import io from 'socket.io-client';
+const socket = io.connect("http://localhost:4000");
 const useStyles = makeStyles(theme => ({
     pageContent: {
         margin: theme.spacing(5),
@@ -43,32 +42,10 @@ const headCells = [
     { id: 'action', label: 'Action' },
 ]
 
-export default function Allbooking() {
+export default function Pending() {
     // call data 
     const [items, setData] = useState([]);
     const [status, setStatus] = useState(null);
-    useEffect(
-        () => {
-            bookingApi.getAllBooking().then((res) => {
-                setData(res.data.data);
-            }).catch((err) => console.log(err));
-        }, [status]);
-    //update data
-
-
-    function updateSTATUS(data, status) {
-        data.status = status;
-        bookingApi.updateStatus(data).then((response) => {
-            setStatus(response.data.data);
-            bookingApi.getAllBooking().then((res) => {
-                setData(res.data.data);
-                // console.log(res.data.data);
-            }).catch((err) => console.log(err));
-            console.log(response.data.data = "stat", "Data");
-        });
-    }
-    //onSubmit handler 
-
     const classes = useStyles();
     const [recordForEdit, setRecordForEdit] = useState(null)
     const [records, setRecords] = useState(allbookingService.getAllEmployees())
@@ -77,6 +54,49 @@ export default function Allbooking() {
     const [notify, setNotify] = useState({ isOpen: false, message: '', type: '' })
     const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, title: '', subTitle: '' })
 
+    const [newBookingSocket, setNewBookingSocket] = useState([]);
+    const getAllBooking = async () => {
+        try {
+            const response = await bookingApi.getAllBooking();
+            console.log(response, 'this is cool huh')
+            setData(response.data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const setupSocketListener = () => {
+        socket.on('newBookingSocket', (bookingData) => {
+            setNewBookingSocket((arr) => [...arr, bookingData]);
+        });
+    };
+
+    
+    useEffect(() => {
+    // socket.on('bookingApprovalSocket', (bookingData) => {
+    //     setNewBookingSocket((arr) => [...arr, bookingData]);
+    //     console.log(bookingData, 'hi data from admin')
+    // });
+        setupSocketListener();
+        getAllBooking();
+        return () => {
+            socket.off('newBookingSocket');
+        };
+    }, [status, newBookingSocket]);
+    //update data
+
+
+    function onUpdateStatus(data, status) {
+        data.status = status;
+        bookingApi.updateStatus(data).then((response) => {
+            setStatus(response.data.data);
+            getAllBooking();
+            console.log(response.data.data = "stat", "Data");
+        });
+    }
+    //onSubmit handler 
+
+
     const {
         TblContainer,
         TblHead,
@@ -84,7 +104,6 @@ export default function Allbooking() {
         recordsAfterPagingAndSorting
     } = useTable(records, headCells, filterFn);
 
-    console.log(items, 'this si titems')
     return (
         <>
             <Paper className={classes.pageContent}>
@@ -117,13 +136,13 @@ export default function Allbooking() {
 
                                         <Controls.ActionButton
 
-                                            onClick={() => { updateSTATUS(item, "Approved") }}
+                                            onClick={() => { onUpdateStatus(item, "Approved") }}
                                         >
                                             <CheckBoxIcon color="success" />
 
                                         </Controls.ActionButton>
                                         <Controls.ActionButton
-                                            onClick={() => { updateSTATUS(item, "Rejected") }}
+                                            onClick={() => { onUpdateStatus(item, "Rejected") }}
                                         >
                                             <DisabledByDefaultIcon color="error" />
                                         </Controls.ActionButton>
