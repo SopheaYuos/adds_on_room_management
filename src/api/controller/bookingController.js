@@ -1,20 +1,71 @@
 const promiseCon = require("../../config/promiseCon");
 const formatDate = require("../../utils/formatDate");
+const { createNewNotification } = require("./notificationController");
+
+const checkDoubleBooking = async (reqBody) =>{
+    const {start_date, end_date, room_id, sub_room_id} = reqBody;
+    const sql = `
+        SELECT COUNT(*) AS booking_count FROM booking
+	    WHERE  
+            start_date >= "${start_date}"
+		    AND end_date <= "${end_date}"
+		    AND room_id = ${room_id}
+		    AND sub_room_id ${sub_room_id ? `= ${sub_room_id}` : 'IS NULL'}
+            AND status = 'Approved'
+            AND is_delete = 0;`
+    const res = await promiseCon.query(sql);
+
+    if(res[0][0].booking_count > 0){
+        return true;
+    }
+    return false;
+}
 
 module.exports = {
     addNewBooking: async function insertNew(reqBody, io) {
+    
+        const isDoubleBooking = await checkDoubleBooking(reqBody);
+        if(isDoubleBooking){
+            return false;
+        }
+
         const created = formatDate(new Date()) //generate current date
+        const {
+            start_date,
+            end_date,
+            room_id,
+            sub_room_id,
+            number_of_people,
+            event_type,
+            responsibler,
+            status,
+            description
+        } = reqBody;
+
         const sql = `
-        INSERT INTO booking(start_date, end_date, room_id, sub_room_id, number_of_people,event_type,responsibler, status, description, created, modified)
-                    values("${reqBody.start_date}", "${reqBody.end_date}", ${reqBody.room_id}, ${reqBody.sub_room_id}, ${reqBody.number_of_people}, "${reqBody.event_type}", "${reqBody.responsibler}", "${reqBody.status}"," ${reqBody.description}", "${created}", "${created}")`;
-        console.log(sql, "sql")
-        const result = await (await promiseCon).query(sql);
+                INSERT INTO booking(start_date, end_date, room_id, sub_room_id, number_of_people, event_type, responsibler, status, description, created, modified)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 `;
+        const values = [
+            start_date,
+            end_date,
+            room_id,
+            sub_room_id,
+            number_of_people,
+            event_type,
+            responsibler,
+            status,
+            description,
+            created,
+            created
+        ];
+        const result = await promiseCon.query(sql, values);
+
         const obj = {
             room_id: reqBody.room_id,
             sub_room_id: reqBody.sub_room_id
         }
         io.emit('newBookingSocket', obj);
-        console.log('\n______here we go ')
         return result;
     },
     updateBooking: async function updateBooking(reqBody) {
@@ -66,7 +117,7 @@ module.exports = {
                         r.id = b.room_id AND 
                         b.start_date ='${body.start_date}' AND 
                         b.end_date ='${body.end_date}' AND 
-                        (b.status = "Approved" or b.status = "Pending")  AND
+                        b.status = "Approved"  AND
                         b.is_delete = FALSE) 
                         as tb2
                     ON  tb1.id = tb2.room_id;
@@ -87,7 +138,7 @@ module.exports = {
                                 where
                                     b.room_id = s.room_id AND
                                     b.sub_room_id = s.id AND
-                                   (b.status = "Approved" or b.status = "Pending") AND
+                                    b.status = "Approved" AND
                                     b.start_date >= '${body.start_date}' AND 
                                     b.end_date <= '${body.end_date}' AND 
                                     b.is_delete = FALSE)
@@ -102,14 +153,30 @@ module.exports = {
             `);
         return result[0];
     },
-    updateStatus: async function updateStatus(reqBody) {
-        const created = formatDate(new Date());
-        console.log(reqBody.start_date)
+    updateStatus: async function updateStatus(reqBody, io) {
+        console.log(reqBody, 'here it is')
+        const returnedSocketObj = {
+            start_date: reqBody.start_date,
+            end_date: reqBody.end_date,
+            room_id: reqBody.room_id?.id ?? null,
+            sub_room_id: reqBody.sub_room_id?.id ?? null,
+            approval_status: reqBody.status
+        }
         const sql = `
         UPDATE  booking SET
                         status = "${reqBody.status}"
                 WHERE id = ${reqBody.id}; `;
-        const result = await (await promiseCon).query(sql);
+        const result = await promiseCon.query(sql);
+        io.emit('bookingApprovalSocket', returnedSocketObj);
+        io.emit('notificationApprovalSocket', returnedSocketObj);
+        const newNotificationObject = {
+            start_date: reqBody.start_date,
+            end_date: reqBody.end_date,
+            room_id: reqBody.room_id?.id ?? null,
+            sub_room_id: reqBody.sub_room_id?.id ?? null,
+            approval_status: reqBody.status
+        }
+        // createNewNotification(id, user);
         return result;
     },
     getBookingById: async function getOneBooking(id) {
@@ -133,7 +200,12 @@ module.exports = {
             SELECT b.* FROM booking b JOIN users u
             ON b.responsibler = u.user_id
             WHERE b.responsibler ="${id}"
-            AND u.is_delete = FALSE AND b.is_delete = FALSE ;
+            AND u.is_delete = FALSE AND b.is_delete = FALSE
+            ORDER BY CASE
+            WHEN status = 'Pending' THEN 0
+            WHEN status = 'Rejected' THEN 1
+            ELSE 2
+            END ;
              `);
         const res = await getForeignTables(result);
         return res[0]

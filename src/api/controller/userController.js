@@ -27,7 +27,7 @@ module.exports = {
         }
         try {
             const sql = `CALL GetUserProc('${params.value}', '${params.column}');`;
-            const result = await (await promiseCon).query(sql);
+            const result = await promiseCon.query(sql);
             let isUserExistedInDB = false;
             if (result[0][0].length > 0) {
                 isUserExistedInDB = true;

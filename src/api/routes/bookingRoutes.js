@@ -16,11 +16,18 @@ module.exports = function (app, io) {
 
         .post(async (req, res) => {
             const result = await addNewBooking(req.body, io);
-            console.log(result, 'heeresss')
+            console.log(result, 'the routes resut')
+            if(!result){
+                res.status(200).json({
+                    success: false,
+                    message: 'This room is already booked'
+                });
+                return;
+            }
             if (result[0].affectedRows == 1) {
                 res.status(200).json({
                     success: true,
-                    message: 'Created sucessfully'
+                    message: 'Booked successfully'
                 });
             } else {
                 res.status(404).json({
@@ -62,7 +69,7 @@ module.exports = function (app, io) {
         })
     app.route('/book/status')
         .put(async (req, res) => {
-            const result = await updateStatus(req.body);
+            const result = await updateStatus(req.body, io);
             if (result[0].affectedRows == 1) {
                 res.status(200).json({
                     success: true,

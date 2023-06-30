@@ -78,21 +78,6 @@ const io = new socketio.Server(httpServer, {
     }
 })
 
-io.on("connection", (socket) => {
-    // console.log(socket, 'thisis socket')
-    console.log(`User Connected: ${socket.id}`);
-
-    socket.on("join_room", (data) => {
-        socket.join(data);
-    });
-
-    socket.on("send_message", (data) => {
-        // socket.to(data.room).emit("receive_message", data);
-        io.emit("receive_message", data);
-        console.log(data, 'data')
-    });
-
-});
 httpServer.listen(PORT)
 
 // app.get('/', (req, res) => {
