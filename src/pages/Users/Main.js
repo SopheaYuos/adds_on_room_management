@@ -15,10 +15,14 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { Button } from '@mui/material';
+import { Button, Divider } from '@mui/material';
 import { Outlet } from 'react-router';
 import { NavLink } from 'react-router-dom';
+import io from 'socket.io-client';
 import './StyleUser.css';
+import { NotificationsNone } from '@mui/icons-material';
+const socket = io.connect("http://localhost:4000");
+
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -61,14 +65,26 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function User() {
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [notificationsAnchorEl, setNotificationsAnchorEl] = React.useState(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
-    const isMenuOpen = Boolean(anchorEl);
+    const [isMenuOpen, setIsMenuOpen] = React.useState(Boolean(anchorEl));
+    const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = React.useState(false);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
+    const [notificatons, setNotifications] = React.useState([]);
     const handleProfileMenuOpen = (event) => {
+        setIsMenuOpen(true);
         setAnchorEl(event.currentTarget);
     };
+    const handleNotificationsMenuOpen = (event) => {
+        setIsNotificationsMenuOpen(true);
+        setNotificationsAnchorEl(event.currentTarget);
+    };
+    const handleNotificationsMenuClose = ()=>{
+        setNotificationsAnchorEl(null);
+        setIsNotificationsMenuOpen(false);
+    }
+
 
     const handleMobileMenuClose = () => {
         setMobileMoreAnchorEl(null);
@@ -76,34 +92,148 @@ export default function User() {
 
     const handleMenuClose = () => {
         setAnchorEl(null);
+        setIsMenuOpen(false);
         handleMobileMenuClose();
     };
 
     const handleMobileMenuOpen = (event) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
+    const setupSocketListener = () => {
+        socket.on('notificationApprovalSocket', (notifcationData) => {
+            setNotifications((arr) => [...arr, notifcationData]);
+        });
+    };
+    React.useEffect(() =>{
+        setupSocketListener();
+        return () => {
+            socket.off('notificationApprovalSocket');
+        };
+    }, [notificatons]);
 
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu
-            anchorEl={anchorEl}
+            anchorEl={anchorEl} // Use separate anchorEl for profile menu and notification menu
             anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: 'bottom',
+                horizontal: 'center',
             }}
             id={menuId}
+            keepMounted
+            transformOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+            }}
+            open={isMenuOpen}
+            onClose={handleMenuClose} // Update the event handler for the profile menu
+        >
+            {/* Profile menu content */}
+            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+        </Menu>
+    );
+
+    const renderNotificationsMenu = (
+        <Menu
+            MenuListProps={{style: { paddingTop: 0, width: 480, maxWidth: 480, height: 500} }}
+            PaperProps={{
+                style: {
+                    borderRadius: '12px',
+                },
+            }}
+            anchorEl={notificationsAnchorEl} // Use separate anchorEl for notifications menu
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+            }}
             keepMounted
             transformOrigin={{
                 vertical: 'top',
                 horizontal: 'right',
             }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
+            open={isNotificationsMenuOpen}
+            onClose={handleNotificationsMenuClose} // Update the event handler for the notification menu
         >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+    
+            <section className='notifications__container'>
+                
+                    <div>Notifications</div>
+                    <Divider />
+
+
+                
+            </section>
+            {/* <section className="notifications__content">
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+                <div>fuck you</div>
+            </section> */}
+           
+                {notificatons.length === 0
+                    ?
+                        <div className='notifications__empty-content'>
+                            <div className='notification-icon'>
+                                <NotificationsNone />
+                            </div>
+                            <div>Your notifications live here</div>
+                        </div>
+
+                    :
+                    
+
+                        <section className='notifications__content'>
+                          {  notificatons.map(item =>
+                            <div>
+                                <div onClick={handleNotificationsMenuClose}>{item.approval_status}</div>
+                                <div onClick={handleNotificationsMenuClose}>{item.start_date}</div>
+                            </div>
+                            )
+                            }
+                        </section>
+
+                }
+            
+                    
         </Menu>
     );
+
 
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
@@ -124,7 +254,7 @@ export default function User() {
         >
             <MenuItem>
                 <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={4} color="error">
+                    <Badge badgeContent={notificatons.length} color="error">
                         <MailIcon />
                     </Badge>
                 </IconButton>
@@ -134,6 +264,7 @@ export default function User() {
                 <IconButton
                     size="large"
                     aria-label="show 17 new notifications"
+                    aria-controls="notification-id"
                     color="inherit"
                 >
                     <Badge badgeContent={17} color="error">
@@ -158,7 +289,8 @@ export default function User() {
     );
 
     return (
-        <Box sx={{ flexGrow: 1 }} className='user__page-container'>
+        
+        <Box className='user__page-container'>
             <AppBar sx={{ backgroundColor: '#1565c0' }} position="fixed">
                 <Toolbar>
 
@@ -195,9 +327,11 @@ export default function User() {
                             size="large"
                             aria-label="show 17 new notifications"
                             color="inherit"
+                            onClick={handleNotificationsMenuOpen}
+
                         >
-                            <Badge badgeContent={17} color="error">
-                                <NotificationsIcon />
+                            <Badge badgeContent={Number(notificatons.length)} color="error">
+                                {isNotificationsMenuOpen ? <NotificationsIcon />  : <NotificationsNone />}
                             </Badge>
                         </IconButton>
                         <IconButton
@@ -228,6 +362,7 @@ export default function User() {
             </AppBar>
             {renderMobileMenu}
             {renderMenu}
+            {renderNotificationsMenu}
             <Outlet ></Outlet>
         </Box >
     );

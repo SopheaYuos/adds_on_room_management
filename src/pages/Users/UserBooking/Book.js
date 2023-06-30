@@ -20,11 +20,8 @@ import './userBookinStyle.css'
 import jwt_decode from 'jwt-decode';
 import CustomizedSnackbars from '../../../components/Snackbar';
 import io from 'socket.io-client';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 import { format, formatISO, parse, parseISO } from 'date-fns';
-dayjs.extend(utc);;
-dayjs.extend(timezone);
+
 const socket = io.connect("http://localhost:4000");
 export default function Book() {
 
@@ -130,12 +127,6 @@ export default function Book() {
     const setupSocketListener = () => {
         socket.on('bookingApprovalSocket', (bookingData) => {            
             setAllBookedRooms((arr) => [...arr, bookingData]);
-            console.log(bookingData, 'gooooooos');
-           
-            // dayjs('2021-06-08T24:00:00').utc('z').local().tz('America/Detroit').format('ddd, MMM D, H:mm z')
-            // console.log("start_date", dayjs(allBookedRooms.start_date,).utc(true).tz('Asia/Phnom_Penh').format('YYYY-MM-DD hh:mm A'))
-
-            // console.log(filterTime, filterDate, 'd')
         });
     };
 
