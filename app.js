@@ -93,6 +93,7 @@ require('./src/api/routes/sendMailRoutes')(app);
 require('./src/auth/loginService')(app);
 require('./src/api/routes/otpRoutes')(app)
 require('./src/api/routes/roomEquipmentRoutes')(app);
+require('./src/api/routes/notificationsRoutes')(app);
 
 
 // console.log('All routes: ')

@@ -1,6 +1,8 @@
 const promiseCon = require("../../config/promiseCon");
-const formatDate = require("../../utils/formatDate");
-const { createNewNotification } = require("./notificationController");
+const {formatDate, fomatReadableDateOnly, fomatReadableTimeOnly} = require("../../utils/formatDate");
+// const formatDate = require("../../utils/formatDate");
+
+const { createNewNotification, getNotificationByUserId } = require("./notificationController");
 
 const checkDoubleBooking = async (reqBody) =>{
     const {start_date, end_date, room_id, sub_room_id} = reqBody;
@@ -154,7 +156,7 @@ module.exports = {
         return result[0];
     },
     updateStatus: async function updateStatus(reqBody, io) {
-        console.log(reqBody, 'here it is')
+        // console.log(reqBody, 'here it is')
         const returnedSocketObj = {
             start_date: reqBody.start_date,
             end_date: reqBody.end_date,
@@ -168,15 +170,15 @@ module.exports = {
                 WHERE id = ${reqBody.id}; `;
         const result = await promiseCon.query(sql);
         io.emit('bookingApprovalSocket', returnedSocketObj);
-        io.emit('notificationApprovalSocket', returnedSocketObj);
         const newNotificationObject = {
-            start_date: reqBody.start_date,
-            end_date: reqBody.end_date,
-            room_id: reqBody.room_id?.id ?? null,
-            sub_room_id: reqBody.sub_room_id?.id ?? null,
-            approval_status: reqBody.status
+            user_id: reqBody.responsibler.user_id,
+            booking_id: reqBody.id,
+            message: `Booking ${reqBody.status}:  <span class="notifications_date">${fomatReadableDateOnly(reqBody.start_date)}</span>, <span class="notifications_date">${fomatReadableTimeOnly(reqBody.start_date)}-${fomatReadableTimeOnly(reqBody.end_date)}</span>`
         }
-        // createNewNotification(id, user);
+        const newNotificationRes = await createNewNotification(newNotificationObject);
+        console.log(newNotificationRes, 'this is new')
+        const res = await getNotificationByUserId(reqBody.responsibler.user_id, newNotificationRes[0].insertId);
+        io.emit('notificationApprovalSocket', res);
         return result;
     },
     getBookingById: async function getOneBooking(id) {

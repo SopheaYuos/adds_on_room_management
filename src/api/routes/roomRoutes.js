@@ -5,7 +5,7 @@ module.exports = function (app) {
     app.route('/room')
         .get(async (req, res) => {
             const result = await getAllRooms();
-            // console.log(result);
+            // console.log(result); 
             res.status(200).json({
                 success: true,
                 data: result
