@@ -6,6 +6,7 @@ import CustomizedSnackbars from '../../../components/Snackbar';
 import { Slide } from '@mui/material';
 import { Lock, Person, Visibility, VisibilityOff } from '@mui/icons-material';
 import LoginApi from '../../../api/loginApi';
+import { setCookie } from '../../../helper/cookieHelper';
 export const Login2 = () => {
     const [isFocused, setIsFocused] = useState(false);
     const [isPasswordFocus, setIsPasswordFocus] = useState(false);
@@ -48,7 +49,8 @@ export const Login2 = () => {
             if (result.success) {
                 setSnackBar({ isOpen: true, message: result.message, type: "success" })
 
-                document.cookie = "token=" + result?.token;
+                setCookie('token', result?.token, 7);
+
                 const USER_ROLE = jwt_decode(result.token).user_role;
                 if (USER_ROLE === 'ADMIN') {
                     navigate('/dashboard')

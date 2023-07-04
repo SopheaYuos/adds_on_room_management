@@ -11,6 +11,15 @@ function getCookie(name) {
 export default function getUserFromCookie(tokenName) {
     return jwt_decode(getCookie(tokenName));
 }
+export function setCookie(name, value, expirationDays) {
+    const currentDate = new Date();
+    const expirationDate = new Date(currentDate.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+    const expires = expirationDate.toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+}
+export function removeCookie(name) {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+}
 
 // // Set a cookie with a value and expiration date
 // function setCookie(name, value, expirationDate) {
