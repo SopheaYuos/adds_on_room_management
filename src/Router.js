@@ -22,6 +22,7 @@ import ViewRoomDetail from "./pages/Room/ViewRoomDetail";
 import MiniDrawer from "./pages/SideBar/Drawer";
 import TestParent from "./components/inputComponent/TestParent";
 import ProfileSettings from "./pages/Users/ProfileSetting";
+import AdminProfileSettings from "./pages/SideBar/AdminProfileSettings";
 // import { RegisterForm } from "./pages/Auth/RegisterForm";
 // import RegisterPage from "./pages/Auth/Register/Register";
 // import { Login2 } from "./pages/Auth/Login2";
@@ -84,6 +85,9 @@ export const router = createBrowserRouter([
       }, {
         path: "/teacher",
         element: <Teacher />
+      },{
+        path: "/profile-setting",
+        element: <AdminProfileSettings />
       },
 
     ],

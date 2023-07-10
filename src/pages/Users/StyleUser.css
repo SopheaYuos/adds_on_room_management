@@ -65,10 +65,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
 }
 .notifications__content > div:hover{
     background-color: #f0f0f0;
-    cursor: pointer;
 }
 .notifications_date{
     font-weight: 600;

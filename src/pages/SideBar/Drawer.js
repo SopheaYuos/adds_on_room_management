@@ -17,6 +17,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import StudentIcon from '@mui/icons-material/Group';
 import TeacherIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings'
@@ -24,9 +25,17 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Stack } from '@mui/system';
-import { Avatar, GlobalStyles, Menu, MenuItem } from '@mui/material';
+import { Avatar, Badge, GlobalStyles, Menu, MenuItem } from '@mui/material';
 import '../../index.css';
 import { AccountCircle } from '@material-ui/icons';
+import usersApi from '../../api/usersApi';
+import getUserFromCookie, { removeCookie } from '../../helper/cookieHelper';
+import { Logout, NotificationsNone, Settings } from '@mui/icons-material';
+import { displayTimeDistance } from '../../helper/dateFormatHelper';
+import io from 'socket.io-client';
+import notificationsApi from '../../api/notificationsApi';
+
+const socket = io.connect("http://localhost:4000");
 
 const drawerWidth = 180;
 const bodyColor = "rgba(246, 246, 246, 0.8)"
@@ -113,11 +122,11 @@ function MiniDrawer() {
 
 
   const sideBarMainFeatures = [
-    {
-      text: <Typography sx={{ fontSize: '18px' }} variant="h5" component="h5">
-        Dashboard
-      </Typography>, icon: <DashboardIcon />, path: '/dashboard',
-    },
+    // {
+    //   text: <Typography sx={{ fontSize: '18px' }} variant="h5" component="h5">
+    //     Dashboard
+    //   </Typography>, icon: <DashboardIcon />, path: '/dashboard',
+    // },
     {
       text: <Typography sx={{ fontSize: '18px' }} variant="h5" component="h5">
         Room
@@ -133,14 +142,14 @@ function MiniDrawer() {
         Student
       </Typography>, icon: <StudentIcon />, path: '/student'
     },
-    {
-      text: <Typography sx={{ fontSize: '18px' }} variant="h5" component="h5">
-        Teacher
-      </Typography>, icon: <TeacherIcon />, path: '/teacher'
-    }
+    // {
+    //   text: <Typography sx={{ fontSize: '18px' }} variant="h5" component="h5">
+    //     Teacher
+    //   </Typography>, icon: <TeacherIcon />, path: '/teacher'
+    // }
   ];
   const settings = [
-    { text: 'Setting', icon: <SettingsIcon /> }
+    // { text: 'Setting', icon: <SettingsIcon /> }
   ]
   const navigate = useNavigate();
   const theme = useTheme();
@@ -159,19 +168,71 @@ function MiniDrawer() {
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
-
-  const isMenuOpen = Boolean(anchorEl);
+  const [notificationsAnchorEl, setNotificationsAnchorEl] = React.useState(null);
+  const [isMenuOpen, setIsMenuOpen] = React.useState(Boolean(anchorEl));
+  const [isNotificationsMenuOpen, setIsNotificationsMenuOpen] = React.useState(false);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const [notifications, setNotifications] = React.useState([]);
+  const [unReadNotifications, setUnReadNotifications] = React.useState(0);
+  const [userProfileInfo, setUserProfileInfo] = React.useState();
 
+  const getUserProfileInfomation = async () => {
+    const res = await usersApi.getOneUser(getUserFromCookie('token').user_id);
+    console.log(res.data.data[0]);
+    setUserProfileInfo(res.data.data[0]);
+  }
+  const onUserProfileSettings = async () => {
+    setAnchorEl(null);
+    setIsMenuOpen(false);
+    navigate('/profile-setting')
+  }
+  const renderNotificationsMessage = (message) => {
+
+    return (
+      <div dangerouslySetInnerHTML={{ __html: message }}></div>
+    );
+  }
+  
+  const setupSocketListener = () => {
+      socket.on('newBookingForAdminNotification', (data) => {
+        console.log('here we gooooooooo')
+        setNotifications((prevNotifications) => [data, ...prevNotifications]);
+        setUnReadNotifications((prevCount) => prevCount + 1);
+      });
+
+  };
+
+  React.useEffect(() => {
+    console.log('1')
+    setupSocketListener();
+    console.log('2')
+    // if(setUpS)
+    getUserProfileInfomation();
+    console.log(notifications, 'xdssxx')
+    return () => {
+      socket.off('newBookingForAdminNotification');
+    };
+  }, []);
   const handleProfileMenuOpen = (event) => {
+    setIsMenuOpen(true);
     setAnchorEl(event.currentTarget);
   };
+  const handleNotificationsMenuOpen = (event) => {
+    setIsNotificationsMenuOpen(true);
+    setNotificationsAnchorEl(event.currentTarget);
+    setUnReadNotifications(0)
+  };
+  const handleNotificationsMenuClose = () => {
+    setNotificationsAnchorEl(null);
+    setIsNotificationsMenuOpen(false);
+  }
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null);
   };
   const handleMenuClose = () => {
     setAnchorEl(null);
+    setIsMenuOpen(false);
     handleMobileMenuClose();
   };
   const handleMenuLogout = () => {
@@ -181,25 +242,136 @@ function MiniDrawer() {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
+  const onUserLogOut = () => {
+    removeCookie('token');
+    setAnchorEl(null);
+    setIsMenuOpen(false);
+    window.location.reload();
+  }
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
     <Menu
-      anchorEl={anchorEl}
+      onBlur={handleMenuClose}
+      MenuListProps={{ style: { paddingTop: 0, width: 280, maxWidth: 280, height: 200 } }}
+      PaperProps={{
+        style: {
+          borderRadius: '12px',
+        },
+      }}
+      anchorEl={anchorEl} // Use separate anchorEl for profile menu and notification menu
       anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
+        vertical: 'bottom',
+        horizontal: 'center',
       }}
       id={menuId}
       keepMounted
       transformOrigin={{
         vertical: 'bottom',
-        horizontal: 'right',
+        horizontal: 'center',
       }}
       open={isMenuOpen}
-      onClose={handleMenuClose}
+      onClose={handleMenuClose} // Update the event handler for the profile menu
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuLogout}>Log out</MenuItem>
+      {/* Profile menu content */}
+      <section className='notifications__container user_profile_container'>
+
+        <div>
+          <AccountCircle />
+          <div className="profile-name">{userProfileInfo?.name}</div>
+        </div>
+        <Divider />
+
+
+
+      </section>
+      <section className='notifications__content user_profile_content'>
+        <div className='profile-content' onClick={onUserProfileSettings}>
+          <Settings />
+          <div>Profile Settings</div>
+        </div>
+        <div className='profile-content' onClick={onUserLogOut}>
+          <Logout />
+          <div >Log Out</div>
+        </div>
+      </section>
+
+      {/* <MenuItem onClick={handleMenuClose}>
+                <IconButton
+                    size="large"
+                    edge="end"
+                    aria-label="account of current user"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={handleProfileMenuOpen}
+                    color="inherit"
+                >
+                    <AccountCircle />
+                </IconButton>
+                {userProfileInfo.name}
+            </MenuItem>
+            <MenuItem onClick={handleMenuClose}>My account</MenuItem> */}
+    </Menu>
+  );
+  const renderNotificationsMenu = (
+    <Menu
+      MenuListProps={{ style: { paddingTop: 0, width: 480, maxWidth: 480, height: 500 } }}
+      PaperProps={{
+        style: {
+          borderRadius: '12px',
+        },
+      }}
+      anchorEl={notificationsAnchorEl} // Use separate anchorEl for notifications menu
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      keepMounted
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      open={isNotificationsMenuOpen}
+      onClose={handleNotificationsMenuClose} // Update the event handler for the notification menu
+    >
+
+      <section className='notifications__container'>
+
+        <div>Notifications</div>
+        <Divider />
+
+
+
+      </section>
+
+
+      {notifications.length === 0
+        ?
+
+        <div className='notifications__empty-content'>
+          <div className='notification-icon'>
+            <NotificationsNone />
+          </div>
+          <div>Your notifications live here</div>
+        </div>
+
+        :
+
+        <section className='notifications__content' style={{ paddingTop: '55px' }}>
+          {notifications.map(item =>
+            <div>
+              {/* <div className={`${item.is_read ? 'read_notification-sign' : 'unread_notification-sign'}`}></div> */}
+              <div>
+                <div onClick={handleNotificationsMenuClose}>{renderNotificationsMessage(item.message)}</div>
+                <div className='time-to-now' onClick={handleNotificationsMenuClose}>{displayTimeDistance(item.created)}</div>
+              </div>
+            </div>
+          )
+          }
+        </section>
+
+      }
+
+
     </Menu>
   );
 
@@ -226,18 +398,32 @@ function MiniDrawer() {
             <Typography variant="h6" noWrap component="div">
               Admin Page
             </Typography>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle fontSize="large" />
+           <div>
+              <IconButton
+                size="large"
+                aria-label="show 17 new notifications"
+                color="inherit"
+                onClick={handleNotificationsMenuOpen}
 
-            </IconButton>
+              >
+                <Badge badgeContent={unReadNotifications} color="error">
+                  {isNotificationsMenuOpen ? <NotificationsIcon /> : <NotificationsNone />}
+                </Badge>
+              </IconButton>
+              <IconButton
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-haspopup="true"
+                onClick={handleProfileMenuOpen}
+                color="inherit"
+              >
+                <AccountCircle fontSize="large" />
+
+              </IconButton>
+           </div>
             {renderMenu}
+            {renderNotificationsMenu}
           </Stack>
         </Toolbar>
       </AppBar>

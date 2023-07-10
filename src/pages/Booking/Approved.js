@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment, Tab } from '@mui/material';
+import { Paper, TableBody, TableRow, TableCell, Toolbar, InputAdornment } from '@mui/material';
 import useTable from "../../components/useTable";
 import * as allbookingService from "../../services/allbookingService";
 import { makeStyles } from '@material-ui/core';
@@ -12,7 +12,9 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import DisabledByDefaultIcon from '@mui/icons-material/DisabledByDefault';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
 import dayjs from 'dayjs';
+
 
 const useStyles = makeStyles(theme => ({
     pageContent: {
@@ -25,8 +27,7 @@ const useStyles = makeStyles(theme => ({
     newButton: {
         position: 'absolute',
         right: '10px'
-    },
-
+    }
 }))
 
 const headCells = [
@@ -40,36 +41,27 @@ const headCells = [
     { id: 'endtime', label: 'End Time' },
     { id: 'person', label: 'Person' },
     { id: 'status', label: 'Status' },
-    { id: 'action', label: 'Action' },
+
 ]
 
 export default function Allbooking() {
+    const label = { inputProps: { 'aria-label': 'Switch demo' } };
     // call data 
     const [items, setData] = useState([]);
-    const [status, setStatus] = useState(null);
-    useEffect(() => {
-        const getAllBooking = async () => {
-            try {
-                const response = await bookingApi.getAllBooking();
-                setData(response.data.data);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        getAllBooking();
-    }, [status]);
+    useEffect(
+        () => {
+            bookingApi.getAllBooking().then((res) => {
+                setData(res.data.data);
+            }).catch((err) => console.log(err));
+        }, []);
     //update data
-
+    const [status, setStatus] = useState(null);
 
     function updateSTATUS(data, status) {
         data.status = status;
+        console.log(data, 'hello');
         bookingApi.updateStatus(data).then((response) => {
             setStatus(response.data.data);
-            bookingApi.getAllBooking().then((res) => {
-                setData(res.data.data);
-                // console.log(res.data.data);
-            }).catch((err) => console.log(err));
             console.log(response.data.data = "stat", "Data");
         });
     }
@@ -90,59 +82,45 @@ export default function Allbooking() {
         recordsAfterPagingAndSorting
     } = useTable(records, headCells, filterFn);
 
-    console.log(items, 'this si titems')
     return (
         <>
             <Paper className={classes.pageContent}>
+                {/* <Controls.Exportdata
+                    excelData={items} fileName={"Student Information"}>
+                    </Controls.Exportdata> */}
                 <TblContainer>
                     <TblHead />
                     <TableBody>
                         {
-                            items.map((item, index) =>
-
+                            items.map(item =>
                             (
-                                item.status === "Approved" && <TableRow key={item}>
 
+                                <TableRow key={item}>
+                                    {(item.status) === "Approved" &&
+                                        <>
+                                            <TableCell>{item.responsibler.name}</TableCell>
+                                            <TableCell>{item.room_id.room_name}</TableCell>
+                                            {item.sub_room_id === null && <TableCell>N/A</TableCell>} {/* cheack condition */}
+                                            {item.sub_room_id != null && <TableCell>{item?.sub_room_id?.room_name}</TableCell>}
+                                            <TableCell>{item.event_type}</TableCell>
+                                            <TableCell>{moment(item.start_date).format('DD MMM YYYY')}</TableCell>
+                                            <TableCell>{moment(item.end_date).format('DD MMM YYYY')}</TableCell>
+                                            <TableCell>{dayjs(item.start_date).format('hh:mm A')}</TableCell>
+                                            <TableCell>{dayjs(item.end_date).format('hh:mm A')}</TableCell>
+                                            <TableCell>{item.number_of_people}</TableCell>
 
-                                    <TableCell>{item.responsibler.name}</TableCell>
-                                    <TableCell>{item.room_id.room_name}</TableCell>
-                                    {item.sub_room_id === null && <TableCell>N/A</TableCell>} {/* cheack condition */}
-                                    {item.sub_room_id != null && <TableCell>{item?.sub_room_id?.room_name}</TableCell>}
-                                    <TableCell>{item.event_type}</TableCell>
-                                    <TableCell>{moment(item.start_date).format('DD MMM YYYY')}</TableCell>
-                                    <TableCell>{moment(item.end_date).format('DD MMM YYYY')}</TableCell>
-                                    <TableCell>{dayjs(item.start_date).format('hh:mm A')}</TableCell>
-                                    <TableCell>{dayjs(item.end_date).format('hh:mm A')}</TableCell>
-                                    <TableCell>{item.number_of_people}</TableCell>
+                                            {/* <TableCell>{item.action}</TableCell> */}
+                                            {item.status === "Approved" && <TableCell><Chip label="Approved" color="success" /></TableCell>}
+                                        </>
+                                    }
 
-                                    {/* <TableCell>{item.action}</TableCell> */}
-                                    {/* {item.status === "Approved" && <TableCell><Chip label="Approved" color="success" /></TableCell>} */}
-                                    {/* {item.status === "Rejected" && <TableCell><Chip label="Rejected" color="error" /></TableCell>} */}
-                                    {item.status === "Pending" && <TableCell><Chip label="Pending" color="warning" /></TableCell>}
-                                    <TableCell>
-
-                                        <Controls.ActionButton
-
-                                            onClick={() => { updateSTATUS(item, "Approved") }}
-                                        >
-                                            <CheckBoxIcon color="success" />
-
-                                        </Controls.ActionButton>
-                                        <Controls.ActionButton
-                                            onClick={() => { updateSTATUS(item, "Rejected") }}
-                                        >
-                                            <DisabledByDefaultIcon color="error" />
-                                        </Controls.ActionButton>
-                                    </TableCell>
-                                </TableRow>
-
-                            )
+                                </TableRow>)
                             )
                         }
                     </TableBody>
                 </TblContainer>
                 <TblPagination />
-            </Paper >
+            </Paper>
         </>
     )
 }

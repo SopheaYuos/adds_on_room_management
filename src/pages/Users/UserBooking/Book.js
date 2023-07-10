@@ -362,7 +362,7 @@ export default function Book() {
                         <DatePicker
                             label="Filter by Date"
                             inputFormat="DD/MMM/YYYY"
-                            // minDate={new Date()}
+                            minDate={new Date()}
                             value={value}
                             onChange={handleChangeDate}
                             disableMaskedInput

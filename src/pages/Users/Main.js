@@ -274,7 +274,7 @@ export default function User() {
                             {console.log(notifications, 'notification')}
                           {  notifications.map(item =>
                             <div>
-                                <div className={`${item.is_read ? 'read_notification-sign' : 'unread_notification-sign'}`}></div>
+                                {/* <div className={`${item.is_read ? 'read_notification-sign' : 'unread_notification-sign'}`}></div> */}
                                   <div>
                                       <div className='room-name' onClick={handleNotificationsMenuClose}>{(item.room_name)} {item.sub_room_name ? `(${item.sub_room_name})` : ''}</div>
                                       <div onClick={handleNotificationsMenuClose}>{renderNotificationsMessage(item.message)}</div>

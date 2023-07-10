@@ -155,7 +155,7 @@ export default function Student() {
       />
 
       <Paper className={classes.pageContent}>
-        <Toolbar>
+        <Toolbar id="room__search-header-container">
           <Controls.Input
             label="Search Students"
             className={classes.searchInput}
@@ -175,8 +175,9 @@ export default function Student() {
                         className={classes.newButton}
                         onClick={() => {  }}
                     /> */}
-          <div id="addbutton">
+          <div id="addbutton" className="student__header-addnew">
             <Controls.Button
+              
               text="Add New"
               variant="outlined"
               startIcon={<AddIcon />}
