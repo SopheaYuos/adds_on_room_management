@@ -21,6 +21,7 @@ import { ResetPassword } from "./pages/Auth/ResetPassword/ResetPassword";
 import ViewRoomDetail from "./pages/Room/ViewRoomDetail";
 import MiniDrawer from "./pages/SideBar/Drawer";
 import TestParent from "./components/inputComponent/TestParent";
+import ProfileSettings from "./pages/Users/ProfileSetting";
 // import { RegisterForm } from "./pages/Auth/RegisterForm";
 // import RegisterPage from "./pages/Auth/Register/Register";
 // import { Login2 } from "./pages/Auth/Login2";
@@ -143,6 +144,10 @@ export const router = createBrowserRouter([
         {
           path: '/user/booked_room',
           element: <BookedRoom />
+        },
+        {
+          path: '/user/profile_settings',
+          element: <ProfileSettings />
         }
       ]
 

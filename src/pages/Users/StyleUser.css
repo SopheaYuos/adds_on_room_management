@@ -1,6 +1,7 @@
 
 :root{
     --notifications-container-height: 49px;
+    --user-profile-details-container-width: 60%;
 }
 .user__page-container .active{
 
@@ -56,9 +57,10 @@
 }
 .notifications__content{
     padding-top: var(--notifications-container-height);
+    padding-bottom: 10px;
 }
 .notifications__content > div{
-    padding: 16px 20px;
+    padding: 15px 20px;
     font-size: 16px;
     display: flex;
     justify-content: center;
@@ -82,7 +84,7 @@
     font-weight: 600;
 }
 .notifications__content .notification-room-img{
-    height:80px;
+    height:70px;
     border-radius: 6px;
 }
 .notifications__content .unread_notification-sign{
@@ -139,4 +141,155 @@
 }
 .user_profile_container > div{
     height: calc(var(--notifications-container-height) + 10px);
+}
+
+.user_profile_detals{
+    height: 60px;
+    width: var(--user-profile-details-container-width);
+    background: #32be8f;
+    margin: 120px auto 0 auto;
+    position: relative;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+ .edit--profile-icon{
+    color: #32be8f;
+    width: 15%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right:10px;
+    border-radius: 12px;
+    font-size: 16px;
+    background: #fff;
+    transition: background .5s;
+    padding: 8px 0px;
+    position: absolute;
+    z-index: 999;
+}
+ .cancel-btn{
+    position: relative;
+    left: -106px;
+    background: transparent;
+    color: #fff;
+    border: 1px solid;
+}
+.save-btn{
+    width: 12%;
+}
+.edit--profile-icon > svg {
+    margin-right:10px;
+}
+.edit--profile-icon:hover{
+    background: #f0f0f0;
+    cursor: pointer;
+}
+.cancel-btn:hover{
+    color:#32be8f;
+}
+.disabled-save{
+    background: #f0f0f0;
+}
+.disabled-save:hover{
+    cursor: not-allowed;
+}
+.second-card-user-profile{
+    height:300px;
+    width: var(--user-profile-details-container-width);
+    margin:0 auto;
+    background: #fff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 0 0 12px 12px;
+    /* margin: 100px auto 0 auto; */
+    position: relative;
+    z-index: 999;
+}
+.second-card-user-profile .user-profile-img{
+    position:relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.second-card-user-profile img{
+    height: 100px;
+    width: 20%;
+    margin-top:-40px;
+
+}
+.user_profile_name{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    color:#32be8f;
+    font-size: 20px;
+    margin-top:10px;
+}
+.user-profile-content{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    color: #333;
+    padding: 20px 0;
+}
+.user-profile-content  div div{
+    display: flex;
+    width: 300px;
+    justify-content: space-between;
+    font-weight: 500;
+    margin: 10px;
+    font-size:20px;
+    line-height: 30px;
+    color: #444
+}
+.container {
+  width: 150px;
+  height: 150px;
+  display: block;
+  margin: 0 auto;
+}
+
+.outer {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 150px !important; /* any size */
+  max-height: 150px !important; /* any size */
+  margin: auto;
+  background-color: #6eafd4;
+  border-radius: 100%;
+  position: relative;
+  }
+  
+.inner {
+  background-color: #f0f0f0;
+  width: 50px;
+  height: 50px;
+  border-radius: 100%;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.inner:hover {
+  background-color: #cccccc;
+  cursor: pointer;
+}
+.inputfile {
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: 1;
+    width: 50px;
+    height: 50px;
+}
+.inputfile + svg {
+    pointer-events: none;
+    cursor: pointer;
+    line-height: 50px;
+    text-align: center;
+    color: #333;
+    font-size: 1.25rem;
 }

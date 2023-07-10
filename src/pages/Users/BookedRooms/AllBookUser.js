@@ -146,7 +146,6 @@ export default function Student() {
                             <TableRow key={item.id} id={item.id}>
 
                                 <TableCell>{row + 1}</TableCell>
-                                {item.start_date}
                                 <TableCell>{item.room_id.room_name}</TableCell>
                                 <TableCell>{item.sub_room_id === null ? 'N/A' : item?.sub_room_id?.room_name}</TableCell>
                                 <TableCell>{format(new Date(item.start_date), 'dd MMMM yyyy hh:mm:a')}</TableCell>
@@ -154,11 +153,11 @@ export default function Student() {
                                 <TableCell>{item?.took_key === 1 ? <Chip color="success" label="Yes" /> : <Chip label="No" />}</TableCell>
                                 <TableCell>{item?.return_key === 1 ? <Chip color="success" label="Yes" /> : <Chip label="No" />}</TableCell>
                                 <TableCell>{item.event_type}</TableCell>
-                                <TableCell>
+                                <TableCell> 
                                     {item.status === "Approved" && <Chip color='success' label="Approved" />}
                                     {item.status === "Rejected" && <Chip color='error' label="Rejected" />}
                                     {item.status === "Pending" && <Chip color='warning' label="Pending" />}
-                                </TableCell>
+                                </TableCell>    
                                 <TableCell>
                                    {item.status === 'Pending' && <Controls.ActionButton
                                         onClick={() => {

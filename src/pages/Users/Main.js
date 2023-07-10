@@ -17,7 +17,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { Button, Divider } from '@mui/material';
 import { Outlet } from 'react-router';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
 import './StyleUser.css';
 import { Logout, NotificationsNone, Settings } from '@mui/icons-material';
@@ -86,6 +86,7 @@ export default function User() {
     const handleNotificationsMenuOpen = (event) => {
         setIsNotificationsMenuOpen(true);
         setNotificationsAnchorEl(event.currentTarget);
+        setUnReadNotifications(0)
     };
     const handleNotificationsMenuClose = ()=>{
         setNotificationsAnchorEl(null);
@@ -113,8 +114,9 @@ export default function User() {
     };
     const onUserLogOut = () =>{
         removeCookie('token');
+        setAnchorEl(null);
+        setIsMenuOpen(false);
         window.location.reload();
-        console.log('here we go');
     }
     const getNotificationFromApi = async()=>{
         try {
@@ -126,7 +128,7 @@ export default function User() {
                     counter++;
                 }
             })
-            setUnReadNotifications(counter)
+            setUnReadNotifications(counter);
 
         }
         catch (err) {
@@ -139,6 +141,12 @@ export default function User() {
         const res = await usersApi.getOneUser(getUserFromCookie('token').user_id);
         console.log(res.data.data[0]);
         setUserProfileInfo(res.data.data[0]);
+    }
+    const navigate = useNavigate();
+    const onUserProfileSettings = async()=>{
+        setAnchorEl(null);
+        setIsMenuOpen(false);
+        navigate('/user/profile_settings')
     }
      React.useEffect(() =>{
         setupSocketListener();
@@ -185,7 +193,7 @@ export default function User() {
 
             </section>
             <section className='notifications__content user_profile_content'>
-                <div className='profile-content'>
+                <div className='profile-content' onClick={onUserProfileSettings}>
                     <Settings />
                     <div>Profile Settings</div>
                 </div>
@@ -193,7 +201,6 @@ export default function User() {
                     <Logout/>
                     <div >Log Out</div>
                    </div>
-                    
             </section>
 
             {/* <MenuItem onClick={handleMenuClose}>

@@ -39,6 +39,9 @@ export default {
     async updateUser(data) {
         return await axios.put(URL + `/users`, data);
     },
+    async updateUserProfile(data) {
+        return await axios.put(URL + `/user/update-profile`, data);
+    },
     async deleteUser(id) {
         return await axios.delete(URL + `/users/${id}`);
     },
