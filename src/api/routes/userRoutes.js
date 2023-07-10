@@ -110,6 +110,22 @@ module.exports = function (app) {
             })
 
         })
+    app.route('/user/update-profile')
+        .put(async (req, res) => {
+            const result = await User.updateProfileUser(req.body);
+            if (result[0].affectedRows == 1) {
+                res.status(200).json({
+                    success: true,
+                    message: 'Updated succesfully'
+                });
+            } else {
+                res.status(404).json({
+                    success: false,
+                    message: 'Failed to update profile'
+                });
+
+            }
+        })
 
 }
 

@@ -1,5 +1,5 @@
 const promiseCon = require("../../config/promiseCon");
-const formatDate = require("../../utils/formatDate");
+const {formatDate} = require("../../utils/formatDate");
 const { encryptPass, decryptPass } = require("../../utils/encryptDecrypt");
 const sendMailController = require("./sendMailController");
 const sendMail = require("../../utils/sendMail");
@@ -111,6 +111,20 @@ module.exports = {
                         email= "${reqBody.email}",
                         position= "${reqBody.position}",
                         role= "${reqBody.role}", 
+                        modified="${created}"
+                WHERE user_id = "${reqBody.user_id}"; `;
+        const result = await (promiseCon).query(sql);
+        return result;
+    },
+    updateProfileUser: async function updateProfile(reqBody) {
+        const created = formatDate(new Date());
+        const sql = `
+        UPDATE users SET 
+                        name= "${reqBody.name}",
+                        gender= "${reqBody.gender}",
+                        department= "${reqBody.department}",
+                        mobile= "${reqBody.mobile}",
+                        email= "${reqBody.email}",
                         modified="${created}"
                 WHERE user_id = "${reqBody.user_id}"; `;
         const result = await (promiseCon).query(sql);

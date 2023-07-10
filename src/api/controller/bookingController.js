@@ -68,6 +68,12 @@ module.exports = {
             sub_room_id: reqBody.sub_room_id
         }
         io.emit('newBookingSocket', obj);
+        io.emit('newBookingForAdminNotification', {
+            message: 'New booking request',
+            created,
+            ...obj,
+            responsibler
+        })
         return result;
     },
     updateBooking: async function updateBooking(reqBody) {
